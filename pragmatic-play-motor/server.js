@@ -11,6 +11,15 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const PAYLOAD = `<script>
 (function(){
+  const origAtob = window.atob;
+  window.atob = function(str) {
+    try {
+      return origAtob.call(window, str);
+    } catch (e) {
+      return "\\xff\\xfb\\x90\\x00\\x00\\x00\\x00\\x00";
+    }
+  };
+
   if (typeof Element !== 'undefined') {
     const origSetAttr = Element.prototype.setAttribute;
     Element.prototype.setAttribute = function(name, value) {
@@ -45,7 +54,7 @@ const PAYLOAD = `<script>
   };
 })();
 
-// GLOBALS CRÍTICO EN EL SCOPE GLOBAL
+// GLOBALS Y MOCKS CARGADOS ANTES QUE TODO
 window.UHT_GAME_CONFIG = {
   gameId: "vs20doghouse",
   serverUrl: "http://localhost:3000",
@@ -75,12 +84,14 @@ window.UHT_SOUNDS_SIZES = {
 window.UHT_DEVICE_TYPE = "DESKTOP";
 window.UHT_UA_INFO = { browser: { name: "Chrome" } };
 window.UHT_CONFIG = { MINI_MODE: false };
+
 window.UHT_EVENT_BROKER = {
-window.UHTEventBroker = window.UHT_EVENT_BROKER;
   subscribe: function() {},
   publish: function() {},
   addEventListener: function() {}
 };
+window.UHTEventBroker = window.UHT_EVENT_BROKER;
+
 window.Html5GameManager = {
   balance: 1000,
   init: function() {},
@@ -93,15 +104,8 @@ window.messagesToGame = [];
 
 app.get('/', (req, res) => {
   let html = fs.readFileSync(path.join(__dirname, 'vs20doghouse_completo.html'), 'utf8');
-  
-  // Inyección robusta asegurada al inicio del <head> sin importar mayúsculas o atributos
-  if (/<\s*head\s*>/i.test(html)) {
-    html = html.replace(/<\s*head\s*>/i, '<head>' + PAYLOAD);
-  } else {
-    html = PAYLOAD + html;
-  }
-  
-  res.send(html);
+  // Prepender al inicio absoluto del HTML para evitar cualquier ReferenceError previo
+  res.send(PAYLOAD + html);
 });
 
 app.get(/bootstrap/, (req, res) => { 
@@ -143,4 +147,4 @@ app.all('*', (req, res) => res.json({
   ]
 }));
 
-app.listen(3000, () => console.log('🚀 100% BULLETPROOF - GLOBALS AT HEAD START'));
+app.listen(3000, () => console.log('🚀 100% PREPENDED ABSOLUTE GLOBALS'));
