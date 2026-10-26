@@ -11,6 +11,24 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const PAYLOAD = `<script>
 (function(){
+  if (typeof window !== 'undefined') {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx && AudioCtx.prototype && AudioCtx.prototype.decodeAudioData) {
+      AudioCtx.prototype.decodeAudioData = function(audioData, successCallback, errorCallback) {
+        try {
+          const sampleRate = 44100;
+          const frames = sampleRate * 1;
+          const buffer = this.createBuffer(2, frames, sampleRate);
+          if (successCallback) successCallback(buffer);
+          return Promise.resolve(buffer);
+        } catch (e) {
+          if (errorCallback) errorCallback(e);
+          return Promise.reject(e);
+        }
+      };
+    }
+  }
+
   const origAtob = window.atob;
   window.atob = function(str) {
     try {
@@ -54,7 +72,22 @@ const PAYLOAD = `<script>
   };
 })();
 
-// GLOBALS Y MOCKS CARGADOS ANTES QUE TODO
+// MOCK GLOBAL DE WRAPPER EN TODOS LOS POSIBLES NAMESPACES
+const mockWrapper = {
+  domElement: document.createElement('div'),
+  onLoad: function() {},
+  addChild: function() {},
+  removeChild: function() {}
+};
+
+window.Wrapper = mockWrapper;
+window.Engine = window.Engine || {};
+window.Engine.Wrapper = mockWrapper;
+window.Game = window.Game || {};
+window.Game.Wrapper = mockWrapper;
+window.Core = window.Core || {};
+window.Core.Wrapper = mockWrapper;
+
 window.UHT_GAME_CONFIG = {
   gameId: "vs20doghouse",
   serverUrl: "http://localhost:3000",
@@ -104,7 +137,6 @@ window.messagesToGame = [];
 
 app.get('/', (req, res) => {
   let html = fs.readFileSync(path.join(__dirname, 'vs20doghouse_completo.html'), 'utf8');
-  // Prepender al inicio absoluto del HTML para evitar cualquier ReferenceError previo
   res.send(PAYLOAD + html);
 });
 
@@ -147,4 +179,4 @@ app.all('*', (req, res) => res.json({
   ]
 }));
 
-app.listen(3000, () => console.log('🚀 100% PREPENDED ABSOLUTE GLOBALS'));
+app.listen(3000, () => console.log('🚀 100% ULTIMATE WRAPPER MOCK'));
