@@ -72,21 +72,41 @@ const PAYLOAD = `<script>
   };
 })();
 
-// MOCK GLOBAL DE WRAPPER EN TODOS LOS POSIBLES NAMESPACES
 const mockWrapper = {
   domElement: document.createElement('div'),
   onLoad: function() {},
   addChild: function() {},
-  removeChild: function() {}
+  removeChild: function() {},
+  visible: true,
+  alpha: 1
 };
 
 window.Wrapper = mockWrapper;
-window.Engine = window.Engine || {};
-window.Engine.Wrapper = mockWrapper;
-window.Game = window.Game || {};
-window.Game.Wrapper = mockWrapper;
-window.Core = window.Core || {};
-window.Core.Wrapper = mockWrapper;
+
+window.goog = window.goog || {
+  Wrapper: mockWrapper,
+  provide: function() {},
+  require: function() {},
+  define: function() {},
+  exportSymbol: function() {},
+  exportProperty: function() {}
+};
+window.goog.dom = window.goog.dom || {};
+window.goog.dom.Wrapper = mockWrapper;
+
+// Blindaje total de SystemMessageManager y su Wrapper
+window.SystemMessageManager = {
+  Wrapper: mockWrapper,
+  OnLoad: function() {},
+  getInstance: function() { return this; }
+};
+
+['Engine', 'Game', 'Core', 'App', 'Application', 'Client', 'Container', 'Main', 'UHT', 'PIXI'].forEach(ns => {
+  window[ns] = window[ns] || {};
+  window[ns].Wrapper = mockWrapper;
+  window[ns].domElement = mockWrapper.domElement;
+  window[ns].getInstance = function() { return window[ns]; };
+});
 
 window.UHT_GAME_CONFIG = {
   gameId: "vs20doghouse",
@@ -179,4 +199,4 @@ app.all('*', (req, res) => res.json({
   ]
 }));
 
-app.listen(3000, () => console.log('🚀 100% ULTIMATE WRAPPER MOCK'));
+app.listen(3000, () => console.log('🚀 100% FIXED SYSTEM MESSAGE MANAGER WRAPPER'));
