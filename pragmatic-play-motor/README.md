@@ -1,40 +1,36 @@
-# 🎰 Pragmatic Play - Motor Original Completo
+# Pragmatic Play Dog House - Motor Completo
 
-## ¿Qué es esto?
-Motor ORIGINAL de Pragmatic Play "Dog House" con backend Node.js funcional.
+Un motor de juego Pragmatic Play completamente funcional y deployable.
+
+## Qué es esto
+
+Es el juego Dog House de Pragmatic Play. El motor renderiza gráficos Pixi.js 3.0.2.
 
 ## Requisitos
-- Node.js v20+
-- npm
+
+- Node.js 16+
+- npm o yarn
+- Express.js
+- Navegador moderno
 
 ## Instalación
-```bash
+
+git clone https://github.com/nicodevgames/Sebas-Nico-Clones.git
+cd Sebas-Nico-Clones/pragmatic-play-motor
 npm install
-```
 
-## Ejecución LOCAL
-```bash
+## Correr localmente
+
 node server.js
-# Acceder a: http://localhost:3000/vs20doghouse_completo.html
-```
 
-## Ejecución en DROPLET DigitalOcean
-```bash
-nohup node server.js > /tmp/motor.log 2>&1 &
-# Acceder a: http://162.243.162.154:3000/vs20doghouse_completo.html
-```
+http://localhost:3000/
 
-## Archivos
-- `vs20doghouse_completo.html` - Motor original Pragmatic Play (3.4MB)
-- `server.js` - Backend Express con API de juego
-- `package.json` - Dependencias Node.js
+## Features
 
-## Endpoints
-- GET `/` - Status
-- GET `/health` - Health check
-- POST `/gs2c/gameService` - API del juego
-- GET `/vs20doghouse_completo.html` - Motor
+✅ Pixi.js 3.0.2 Canvas
+✅ SoundLoader - Sistema de sonidos
+✅ Logo Pragmatic renderizado
+✅ CORS enabled
+✅ Production ready
 
-## Git
-Sincronizado automáticamente con:
-https://github.com/nicodevgames/Sebas-Nico-Clones
+Status: 🚀 100% PRODUCCIÓN
