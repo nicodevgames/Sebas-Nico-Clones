@@ -108,12 +108,13 @@ window.SystemMessageManager = {
   window[ns].getInstance = function() { return window[ns]; };
 });
 
+var ORIGEN = window.location.origin;
 window.UHT_GAME_CONFIG = {
   gameId: "vs20doghouse",
-  serverUrl: "http://localhost:3000",
+  serverUrl: ORIGEN,
   environmentId: 1,
   mode: "real",
-  cdnUrl: "http://localhost:3000"
+  cdnUrl: ORIGEN
 };
 window.UHT_GAME_CONFIG_SRC = window.UHT_GAME_CONFIG;
 
@@ -136,7 +137,12 @@ window.UHT_SOUNDS_SIZES = {
 
 window.UHT_DEVICE_TYPE = "DESKTOP";
 window.UHT_UA_INFO = { browser: { name: "Chrome" } };
-window.UHT_CONFIG = { MINI_MODE: false };
+window.UHT_CONFIG = {
+  MINI_MODE: false,
+  GAME_ID: "vs20doghouse",
+  LANGUAGE: "en",
+  GAME_URL: ORIGEN + "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/"
+};
 
 window.UHT_EVENT_BROKER = {
   subscribe: function() {},
@@ -160,32 +166,31 @@ app.get('/', (req, res) => {
   res.send(PAYLOAD + html);
 });
 
-app.get(/bootstrap/, (req, res) => { 
-  res.set('Content-Type', 'application/javascript'); 
-  res.send(`(function(){})();`); 
+app.get(/bootstrap/, (req, res) => {
+  const ruta = path.join(__dirname, decodeURIComponent(req.path));
+  if (fs.existsSync(ruta)) return res.sendFile(ruta);
+  res.status(404).set('Content-Type', 'application/javascript').send('/* falta: ' + req.path + ' */');
 });
 
-app.get(/build/, (req, res) => { 
-  res.set('Content-Type', 'application/javascript'); 
-  res.send(`(function(){})();`); 
+app.get(/build/, (req, res) => {
+  const ruta = path.join(__dirname, decodeURIComponent(req.path));
+  if (fs.existsSync(ruta)) return res.sendFile(ruta);
+  res.status(404).set('Content-Type', 'application/javascript').send('/* falta: ' + req.path + ' */');
 });
 
 app.use(express.static(path.join(__dirname)));
 
-app.get(/\.js$/, (req, res) => { 
-  res.set('Content-Type', 'application/javascript'); 
-  res.send(`(function(){})();`); 
+app.get(/\.js$/, (req, res) => {
+  const ruta = path.join(__dirname, decodeURIComponent(req.path));
+  if (fs.existsSync(ruta)) return res.sendFile(ruta);
+  res.status(404).set('Content-Type', 'application/javascript').send('/* falta: ' + req.path + ' */');
 });
 
-app.get(/\.json$/, (req, res) => res.json({
-  status: "SUCCESS",
-  sounds: [
-    { id: "main", name: "main", url: "", size: 100 },
-    { id: "spin", name: "spin", url: "", size: 50 },
-    { id: "win", name: "win", url: "", size: 80 }
-  ],
-  assets: []
-}));
+app.get(/\.json$/, (req, res) => {
+  const ruta = path.join(__dirname, decodeURIComponent(req.path));
+  if (fs.existsSync(ruta)) return res.sendFile(ruta);
+  res.status(404).json({ status: 'FALTA' });
+});
 
 app.get(/\.css$/, (req, res) => res.set('Content-Type','text/css').send('body{}'));
 
