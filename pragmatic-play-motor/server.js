@@ -36,16 +36,29 @@ function cabeceras(req) {
 }
 
 const ADAPTADOR = '<script>window.UHT_PACKAGES_INFO=\'{"languages":[]}\';window.UHT_SCRIPTS_SIZE=\'build.js?key=442773:3131544\';window.__CFG=__CONFIG__;window.gameConfig=JSON.parse(window.__CFG);setTimeout(function(){console.log("DBG",typeof window.gameConfig,typeof window.Loader,window.UHT_SCRIPTS_SIZE,window.UHT_CONFIG&&window.UHT_CONFIG.GAME_URL)},3000);</script>';
+const GOOG = '<script>window.goog=window.goog||{provide:function(){},require:function(){},define:function(){},exportSymbol:function(){},exportProperty:function(){}};' +
+  'window.goog.dom=window.goog.dom||{};window.goog.isFunction=function(f){return typeof f=="function"};' +
+  'window.goog.isDef=function(v){return v!==undefined};window.goog.isDefAndNotNull=function(v){return v!=null};' +
+  'window.goog.inherits=function(c,p){function F(){this.constructor=c}F.prototype=p.prototype;c.prototype=new F();c.superClass_=p.prototype};' +
+  'window.goog.array={forEach:function(a,f){for(var i=0;i<a.length;i++)f(a[i],i,a)}};' +
+  'window.Wrapper={domElement:document.createElement("div"),onLoad:function(){},addChild:function(){},removeChild:function(){},visible:true,alpha:1};' +
+  'window.SystemMessageManager={Wrapper:window.Wrapper,OnLoad:function(){},getInstance:function(){return this}};</script>';
 
 app.get('/', async (req, res) => {
   const juego = String(req.query.juego || 'vs20doghouse').replace(/[^a-z0-9]/gi, '');
   try {
-    const r = await fetch(DEMO + '/gs2c/openGame.do?gameSymbol=' + juego + '&jurisdiction=99&lang=en&websiteUrl=' +
-      encodeURIComponent(DEMO), { headers: cabeceras(req), redirect: 'manual' });
+    const r = await fetch(DEMO + '/gs2c/openGame.do?gameSymbol=' + juego + '&jurisdiction=99&lang=en', { headers: cabeceras(req), redirect: 'manual' });
     guardarCookies(r);
     const destino = r.headers.get('location');
-    if (!destino) return res.status(502).type('text').send('El demo no redirigió');
-    res.redirect(302, destino.split(DEMO).join(''));
+    if (!destino) throw new Error('sin redireccion de openGame');
+    const p = await fetch(destino, { headers: cabeceras(req) });
+    guardarCookies(p);
+    const base = '/gs2c/common/v3/games-html5/games/vs/' + juego + '/desktop/';
+    let html = (await p.text()).split(DEMO).join('');
+    html = html.replace('GAME_URL:""', 'GAME_URL:"' + base + '"')
+               .replace('GAME_URL_ALTERNATIVE:""', 'GAME_URL_ALTERNATIVE:"' + base + '"')
+               .replace(/<head[^>]*>/i, (x) => x + '<base href="' + base + '">');
+    res.type('html').send(html);
   } catch (e) {
     res.status(502).type('text').send('No se pudo abrir el demo: ' + e.message);
   }
@@ -53,6 +66,23 @@ app.get('/', async (req, res) => {
 
 app.use(express.static(path.join(__dirname)));
 
+// Los sonidos no están en el árbol público: se responde 200 vacío para que el
+// loader no reintente en bucle. El juego queda mudo pero arranca.
+app.get(/\/(game\/sounds|GUI_sounds)\.(ogg|mp3)$/, (req, res) => {
+  res.status(200).type('application/json').send('{"sounds":[]}');
+});
+
+let sesion = null;
+async function abrirSesion(symbol) {
+  const r = await fetch(DEMO + '/gs2c/openGame.do?gameSymbol=' + encodeURIComponent(symbol) + '&jurisdiction=99&lang=en', { redirect: 'manual', headers: cabeceras({ headers: {} }) });
+  const loc = r.headers.get('location') || '';
+  const m = /mgckey=([^&]+)/.exec(loc) || /mgckey=([^&]+)/.exec(await r.text());
+  guardarCookies(r);
+  if (!m) throw new Error('openGame sin mgckey: ' + r.status);
+  sesion = { mgckey: decodeURIComponent(m[1]), ts: Date.now() };
+  console.log('   sesion abierta', sesion.mgckey.slice(0, 24));
+  return sesion;
+}
 app.use(async (req, res) => {
   console.log(new Date().toISOString().slice(11, 19), req.method, req.originalUrl);
   try {
@@ -60,7 +90,11 @@ app.use(async (req, res) => {
     if (req.method !== 'GET' && req.method !== 'HEAD' && Buffer.isBuffer(req.body) && req.body.length) {
       opciones.body = req.body;
     }
-    const r = await fetch(DEMO + req.originalUrl, opciones);
+    const esInit = req.method === 'POST' && Buffer.isBuffer(req.body) && req.body.toString().includes('action=doInit');
+    if (esInit || !sesion || Date.now() - sesion.ts > 6e5) await abrirSesion('vs20doghouse');
+    const destino = /[?&]mgckey=/.test(req.originalUrl) ? req.originalUrl : req.originalUrl + (req.originalUrl.includes('?') ? '&' : '?') + 'mgckey=' + encodeURIComponent(sesion.mgckey);
+    const r = await fetch(DEMO + destino, opciones);
+
     console.log('   ->', r.status, r.headers.get('content-length'), r.headers.get('content-type'));
     guardarCookies(r);
     res.status(r.status);
