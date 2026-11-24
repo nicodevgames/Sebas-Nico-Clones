@@ -1,207 +1,86 @@
+// Proxy al demo público de Pragmatic Play para Dog House (vs20doghouse).
+// En vez de falsificar el protocolo, reenvía todo al host del demo y reescribe
+// sus URLs absolutas a relativas, así el navegador habla solo con este servidor.
 const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
 const path = require('path');
-const fs = require('fs');
+
+const DEMO = 'https://demogamesfree.pragmaticplay.net';
+const JUEGO = '/gs2c/common/v3/games-html5/games/vs/vs20doghouse/';
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 
 const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.disable('x-powered-by');
+app.use(express.raw({ type: '*/*', limit: '20mb' }));
 
-const PAYLOAD = `<script>
-(function(){
-  if (typeof window !== 'undefined') {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (AudioCtx && AudioCtx.prototype && AudioCtx.prototype.decodeAudioData) {
-      AudioCtx.prototype.decodeAudioData = function(audioData, successCallback, errorCallback) {
-        try {
-          const sampleRate = 44100;
-          const frames = sampleRate * 1;
-          const buffer = this.createBuffer(2, frames, sampleRate);
-          if (successCallback) successCallback(buffer);
-          return Promise.resolve(buffer);
-        } catch (e) {
-          if (errorCallback) errorCallback(e);
-          return Promise.reject(e);
-        }
-      };
-    }
+let cookies = '';
+
+function guardarCookies(r) {
+  const puestas = r.headers.getSetCookie ? r.headers.getSetCookie() : [];
+  for (const c of puestas) {
+    const par = c.split(';')[0];
+    const nombre = par.split('=')[0];
+    cookies = cookies.split('; ').filter((x) => x && x.split('=')[0] !== nombre).concat(par).join('; ');
   }
+}
 
-  const origAtob = window.atob;
-  window.atob = function(str) {
-    try {
-      return origAtob.call(window, str);
-    } catch (e) {
-      return "\\xff\\xfb\\x90\\x00\\x00\\x00\\x00\\x00";
-    }
+function cabeceras(req) {
+  const h = {
+    'user-agent': UA,
+    referer: DEMO + '/',
+    accept: req.headers.accept || '*/*',
   };
+  if (req.headers['content-type']) h['content-type'] = req.headers['content-type'];
+  if (req.headers['accept-language']) h['accept-language'] = req.headers['accept-language'];
+  if (cookies) h.cookie = cookies;
+  return h;
+}
 
-  if (typeof Element !== 'undefined') {
-    const origSetAttr = Element.prototype.setAttribute;
-    Element.prototype.setAttribute = function(name, value) {
-      try {
-        if (!this) return;
-        return origSetAttr ? origSetAttr.call(this, name, value) : (this[name] = value);
-      } catch(e) {
-        this[name] = value;
-      }
-    };
+const ADAPTADOR = '<script>window.UHT_PACKAGES_INFO=\'{"languages":[]}\';window.UHT_SCRIPTS_SIZE=\'build.js?key=442773:3131544\';window.__CFG=__CONFIG__;window.gameConfig=JSON.parse(window.__CFG);setTimeout(function(){console.log("DBG",typeof window.gameConfig,typeof window.Loader,window.UHT_SCRIPTS_SIZE,window.UHT_CONFIG&&window.UHT_CONFIG.GAME_URL)},3000);</script>';
+
+app.get('/', async (req, res) => {
+  const juego = String(req.query.juego || 'vs20doghouse').replace(/[^a-z0-9]/gi, '');
+  try {
+    const r = await fetch(DEMO + '/gs2c/openGame.do?gameSymbol=' + juego + '&jurisdiction=99&lang=en&websiteUrl=' +
+      encodeURIComponent(DEMO), { headers: cabeceras(req), redirect: 'manual' });
+    guardarCookies(r);
+    const destino = r.headers.get('location');
+    if (!destino) return res.status(502).type('text').send('El demo no redirigió');
+    res.redirect(302, destino.split(DEMO).join(''));
+  } catch (e) {
+    res.status(502).type('text').send('No se pudo abrir el demo: ' + e.message);
   }
-  var orig = document.getElementById;
-  document.getElementById = function(id) {
-    var el = orig.call(document, id);
-    if (!el) {
-      var newEl = document.createElement('div');
-      newEl.id = id;
-      if (id === 'ScaleRoot') {
-        newEl.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;margin:0;padding:0;overflow:hidden;';
-      } else if (id === 'ScaleRootLoading') {
-        newEl.style.display = 'none';
-      } else {
-        newEl.style.cssText = 'width:100%;height:100%;position:relative;';
-      }
-      if (!newEl.setAttribute) {
-        newEl.setAttribute = function(k, v) { this[k] = v; };
-      }
-      document.documentElement.appendChild(newEl);
-      return newEl;
-    }
-    return el;
-  };
-})();
-
-const mockWrapper = {
-  domElement: document.createElement('div'),
-  onLoad: function() {},
-  addChild: function() {},
-  removeChild: function() {},
-  visible: true,
-  alpha: 1
-};
-
-window.Wrapper = mockWrapper;
-
-window.goog = window.goog || {
-  Wrapper: mockWrapper,
-  provide: function() {},
-  require: function() {},
-  define: function() {},
-  exportSymbol: function() {},
-  exportProperty: function() {}
-};
-window.goog.dom = window.goog.dom || {};
-window.goog.dom.Wrapper = mockWrapper;
-
-// Blindaje total de SystemMessageManager y su Wrapper
-window.SystemMessageManager = {
-  Wrapper: mockWrapper,
-  OnLoad: function() {},
-  getInstance: function() { return this; }
-};
-
-['Engine', 'Game', 'Core', 'App', 'Application', 'Client', 'Container', 'Main', 'UHT', 'PIXI'].forEach(ns => {
-  window[ns] = window[ns] || {};
-  window[ns].Wrapper = mockWrapper;
-  window[ns].domElement = mockWrapper.domElement;
-  window[ns].getInstance = function() { return window[ns]; };
-});
-
-var ORIGEN = window.location.origin;
-window.UHT_GAME_CONFIG = {
-  gameId: "vs20doghouse",
-  serverUrl: ORIGEN,
-  environmentId: 1,
-  mode: "real",
-  cdnUrl: ORIGEN
-};
-window.UHT_GAME_CONFIG_SRC = window.UHT_GAME_CONFIG;
-
-window.UHT_PACKAGES_INFO_OBJ = {
-  soundLoader: true,
-  assets: [],
-  packages: [],
-  resources: []
-};
-
-window.UHT_SOUNDS_SIZES = {
-  mp3: { "main": 100, "spin": 50, "win": 80 },
-  ogg: { "main": 100, "spin": 50, "win": 80 },
-  sounds: [
-    { id: "main", name: "main", url: "", size: 100 },
-    { id: "spin", name: "spin", url: "", size: 50 },
-    { id: "win", name: "win", url: "", size: 80 }
-  ]
-};
-
-window.UHT_DEVICE_TYPE = "DESKTOP";
-window.UHT_UA_INFO = { browser: { name: "Chrome" } };
-window.UHT_CONFIG = {
-  MINI_MODE: false,
-  GAME_ID: "vs20doghouse",
-  LANGUAGE: "en",
-  GAME_URL: ORIGEN + "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/"
-};
-
-window.UHT_EVENT_BROKER = {
-  subscribe: function() {},
-  publish: function() {},
-  addEventListener: function() {}
-};
-window.UHTEventBroker = window.UHT_EVENT_BROKER;
-
-window.Html5GameManager = {
-  balance: 1000,
-  init: function() {},
-  getInstance: function() { return this; },
-  onLoadingComplete: function() {}
-};
-window.eventHandlers = {};
-window.messagesToGame = [];
-</script>`;
-
-app.get('/', (req, res) => {
-  let html = fs.readFileSync(path.join(__dirname, 'vs20doghouse_completo.html'), 'utf8');
-  res.send(PAYLOAD + html);
-});
-
-app.get(/bootstrap/, (req, res) => {
-  const ruta = path.join(__dirname, decodeURIComponent(req.path));
-  if (fs.existsSync(ruta)) return res.sendFile(ruta);
-  res.status(404).set('Content-Type', 'application/javascript').send('/* falta: ' + req.path + ' */');
-});
-
-app.get(/build/, (req, res) => {
-  const ruta = path.join(__dirname, decodeURIComponent(req.path));
-  if (fs.existsSync(ruta)) return res.sendFile(ruta);
-  res.status(404).set('Content-Type', 'application/javascript').send('/* falta: ' + req.path + ' */');
 });
 
 app.use(express.static(path.join(__dirname)));
 
-app.get(/\.js$/, (req, res) => {
-  const ruta = path.join(__dirname, decodeURIComponent(req.path));
-  if (fs.existsSync(ruta)) return res.sendFile(ruta);
-  res.status(404).set('Content-Type', 'application/javascript').send('/* falta: ' + req.path + ' */');
+app.use(async (req, res) => {
+  console.log(new Date().toISOString().slice(11, 19), req.method, req.originalUrl);
+  try {
+    const opciones = { method: req.method, headers: cabeceras(req), redirect: 'follow' };
+    if (req.method !== 'GET' && req.method !== 'HEAD' && Buffer.isBuffer(req.body) && req.body.length) {
+      opciones.body = req.body;
+    }
+    const r = await fetch(DEMO + req.originalUrl, opciones);
+    console.log('   ->', r.status, r.headers.get('content-length'), r.headers.get('content-type'));
+    guardarCookies(r);
+    res.status(r.status);
+    for (const c of ['content-type', 'cache-control', 'last-modified']) {
+      const v = r.headers.get(c);
+      if (v) res.set(c, v);
+    }
+    let cuerpo = Buffer.from(await r.arrayBuffer());
+    const tipo = r.headers.get('content-type') || '';
+    if (tipo.includes('text/html')) {
+      let h = cuerpo.toString('utf8').split(DEMO).join('');
+      const m = h.match(/gameConfig: '(\{[\s\S]*?\})'/);
+      if (process.env.SHIM !== '0') h = h.replace(/<head[^>]*>/i, (x) => x + ADAPTADOR.replace('__CONFIG__', JSON.stringify(m ? m[1] : '{}')));
+      cuerpo = Buffer.from(h);
+    }
+    res.send(cuerpo);
+  } catch (e) {
+    res.status(502).type('text').send('Error del proxy: ' + e.message);
+  }
 });
 
-app.get(/\.json$/, (req, res) => {
-  const ruta = path.join(__dirname, decodeURIComponent(req.path));
-  if (fs.existsSync(ruta)) return res.sendFile(ruta);
-  res.status(404).json({ status: 'FALTA' });
-});
-
-app.get(/\.css$/, (req, res) => res.set('Content-Type','text/css').send('body{}'));
-
-app.all('*', (req, res) => res.json({
-  status: "SUCCESS",
-  balance: 1000,
-  sounds: [
-    { id: "main", name: "main", url: "", size: 100 },
-    { id: "spin", name: "spin", url: "", size: 50 },
-    { id: "win", name: "win", url: "", size: 80 }
-  ]
-}));
-
-app.listen(3000, () => console.log('🚀 100% FIXED SYSTEM MESSAGE MANAGER WRAPPER'));
+const PUERTO = process.env.PORT || 3000;
+app.listen(PUERTO, () => console.log('Proxy Dog House en http://localhost:' + PUERTO + JUEGO));
