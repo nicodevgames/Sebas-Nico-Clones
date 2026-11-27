@@ -1,94 +1,158 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>PP Slots — Plataforma Propia</title>
+<title>The Dog House</title>
 <style>
-:root{--panel:#171a21;--oro:#ffb020;--verde:#2ecc71}
+:root{--oro:#f6a91d;--oro2:#ffd66e;--madera:#7a4a1e;--madera2:#4a2a0d;--fondo:#170d04;--crema:#ffedb8}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:radial-gradient(ellipse at 50% -20%,#3b2412 0%,#120b06 70%);color:#fff;font-family:'Segoe UI',system-ui,sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column;user-select:none}
-header{text-align:center;padding:6px;font-weight:700;letter-spacing:2px;color:var(--oro);font-size:clamp(14px,3vw,22px);text-shadow:0 2px 6px #000}
-header small{display:block;font-size:10px;letter-spacing:4px;color:#c9a06a}
-#marco{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
-#slot{background:linear-gradient(#4a2c15,#2b1808);border:6px solid #6b3f1d;border-radius:16px;padding:10px;box-shadow:0 12px 40px #000, inset 0 0 30px #0008}
-#grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.celda{width:clamp(52px,13vw,96px);height:clamp(52px,13vw,96px);background:#1c1207;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:clamp(26px,7vw,48px);transition:transform .12s}
-.celda.win{background:#33260a;outline:2px solid var(--oro);animation:pulse .5s infinite alternate;transform:scale(1.06)}
-.celda.scroll{transform:translateY(-8px)}
-@keyframes pulse{to{box-shadow:0 0 18px var(--oro)}}
-#barra{display:flex;gap:12px;align-items:center;justify-content:center;padding:10px;background:#0d0a07;border-top:2px solid #3a2410;flex-wrap:wrap}
-.caja{background:#1d1508;border:1px solid #4a3010;border-radius:10px;padding:6px 14px;text-align:center;min-width:110px}
-.caja b{color:var(--oro);font-size:18px;display:block}
-.caja span{font-size:10px;color:#a88;letter-spacing:1px}
-button{cursor:pointer;border:0;border-radius:10px;font-weight:700}
-.bmas{background:#2a5c33;color:#dff7e3;width:44px;height:44px;font-size:22px}
-.bmenos{background:#5c2a2a;color:#f7dfdf;width:44px;height:44px;font-size:22px}
-#girar{background:linear-gradient(#ffc94a,#e8960f);color:#3a2400;width:min(30vw,120px);height:min(30vw,120px);border-radius:50%;font-size:clamp(13px,3vw,18px);box-shadow:0 6px 0 #96590a,0 10px 24px #000;transition:transform .08s}
-#girar:active{transform:translateY(4px);box-shadow:0 2px 0 #96590a}
-#girar:disabled{filter:grayscale(.6);cursor:wait}
-#mensaje{position:absolute;left:50%;top:12%;transform:translateX(-50%);background:#000c;padding:8px 22px;border-radius:24px;border:2px solid var(--oro);color:var(--oro);font-size:clamp(14px,3vw,20px);font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+html,body{height:100%}
+body{background:#000;color:#fff;font-family:'Trebuchet MS','Segoe UI',system-ui,sans-serif;overflow:hidden;user-select:none;display:flex;flex-direction:column}
+
+/* ---------- SPLASH (logo + barra) ---------- */
+#splash{position:fixed;inset:0;background:#000;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s}
+#splash.fuera{opacity:0;pointer-events:none}
+.logo{text-align:center;margin-bottom:46px}
+.logo .palabras{display:flex;align-items:center;gap:14px;justify-content:center}
+.logo .texto{font-size:clamp(34px,8vw,64px);font-weight:800;letter-spacing:2px;color:#fff;font-family:'Arial Black','Trebuchet MS',sans-serif}
+.logo .badge{width:clamp(64px,14vw,110px);height:clamp(64px,14vw,110px);border:6px solid var(--oro);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;background:#000}
+.logo .badge span{font-size:clamp(16px,4vw,30px);font-weight:800;color:#fff;letter-spacing:1px}
+.logo .badge::after{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%) rotate(-18deg);border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid var(--oro)}
+#carga{width:min(58vw,340px);height:9px;background:#2c2c2c;border-radius:6px;overflow:hidden;box-shadow:0 0 0 2px #111}
+#carga .fill{height:100%;width:4%;background:linear-gradient(90deg,var(--oro),var(--oro2));border-radius:6px;transition:width .25s}
+.patience{margin-top:14px;display:flex;gap:6px}
+.patience i{width:9px;height:9px;border-radius:50%;background:var(--oro);opacity:.25;animation:rot 1s infinite}
+.patience i:nth-child(2){animation-delay:.15s}.patience i:nth-child(3){animation-delay:.3s}.patience i:nth-child(4){animation-delay:.45s}.patience i:nth-child(5){animation-delay:.6s}
+@keyframes rot{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+
+/* ---------- ESCENARIO ---------- */
+#escenario{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0 0;visibility:hidden}
+#escenario.ver{visibility:visible}
+.cinta{background:linear-gradient(180deg,#3a2210,#1d1005);border:2px solid var(--oro);border-radius:20px;color:var(--crema);padding:5px clamp(10px,4vw,34px);font-weight:800;letter-spacing:1px;font-size:clamp(9px,2.4vw,17px);text-transform:uppercase;margin-bottom:8px;box-shadow:0 4px 14px #000a, inset 0 1px 0 #ffffff22;text-align:center}
+.marco-slot{background:linear-gradient(160deg,#8a5523 0%,#5c3312 40%,#3d2008 100%);border-radius:22px;padding:clamp(8px,1.6vw,16px);box-shadow:0 16px 50px #000c, inset 0 0 0 3px #c98a3d66, inset 0 2px 0 #ffffff33;position:relative}
+.marco-slot::before{content:'';position:absolute;inset:5px;border-radius:16px;border:2px dashed #c98a3d55;pointer-events:none}
+#grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;background:#241305;border-radius:14px;padding:8px;border:3px solid #2a1607}
+.celda{width:clamp(54px,12.5vw,98px);height:clamp(46px,10.5vw,84px);background:linear-gradient(180deg,#33200c,#221304);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:clamp(26px,6.2vw,46px);position:relative;box-shadow:inset 0 2px 6px #0008}
+.celda:not(:nth-child(5n+1))::before{content:'';position:absolute;left:-4px;top:12%;height:76%;border-left:2px solid #120a03;filter:drop-shadow(1px 0 0 #6b4522)}
+.celda.win{background:linear-gradient(180deg,#4a3410,#2e1d07);animation:winpulse .55s infinite alternate}
+@keyframes winpulse{from{box-shadow:inset 0 0 4px #ffd66e66}to{box-shadow:0 0 20px 4px var(--oro), inset 0 0 10px #ffd66e}}
+.spinUp{transform:translateY(-7px)!important}.spinDown{transform:translateY(7px)!important}
+.celda{transition:transform .09s linear}
+
+/* ---------- HUD INFERIOR ---------- */
+#hud{display:flex;align-items:center;justify-content:center;gap:clamp(8px,2.4vw,22px);padding:8px 10px 10px;background:linear-gradient(180deg,#241505,#120a03);border-top:3px solid #3d2308}
+.circ{width:clamp(38px,8vw,54px);height:clamp(38px,8vw,54px);border-radius:50%;background:radial-gradient(circle at 35% 30%,#4b3117,#241404);border:2px solid #a06a2c;color:var(--crema);font-size:clamp(16px,3.6vw,24px);font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 8px #0008,inset 0 1px 0 #ffffff22}
+.circ:active{transform:translateY(2px)}
+.valores{display:flex;gap:clamp(8px,2vw,18px)}
+.cajaV{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05}
+.cajaV small{font-size:clamp(8px,1.8vw,11px);color:#c9a06a;letter-spacing:2px}
+.cajaV b{font-size:clamp(14px,3.4vw,24px);color:#fff;text-shadow:0 2px 4px #000;font-weight:800}
+.cajaV b span{color:#fff}
+.grupoBet{display:flex;align-items:center;gap:6px}
+.betBtn{width:clamp(34px,7vw,46px);height:clamp(34px,7vw,46px);border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#3f2b12,#1c1005);color:#e9d5a8;font-size:clamp(16px,3.4vw,22px);font-weight:800;cursor:pointer;border:2px solid #8a5a24;box-shadow:0 3px 6px #0007}
+.betBtn:active{transform:translateY(2px)}
+#btnGirar{width:clamp(74px,16vw,104px);height:clamp(74px,16vw,104px);border-radius:50%;border:0;cursor:pointer;position:relative;
+  background:radial-gradient(circle at 32% 26%,#fff3d6 0%,#ffd66e 22%,#f6a91d 55%,#c67c08 100%);
+  box-shadow:0 6px 0 #8a5406,0 14px 30px #000c, inset 0 2px 6px #ffffffaa;color:#4a2c00}
+#btnGirar:active{transform:translateY(4px);box-shadow:0 2px 0 #8a5406}
+#btnGirar:disabled{filter:grayscale(.5) brightness(.9)}
+#btnGirar .flecha{font-size:clamp(30px,7vw,46px);font-weight:900;text-shadow:0 2px 0 #ffffff88;line-height:1}
+#btnGirar .lblAuto{position:absolute;bottom:12%;left:50%;transform:translateX(-50%);background:#1c1005;color:var(--crema);font-size:clamp(7px,1.7vw,10px);padding:2px 8px;border-radius:8px;letter-spacing:1px;font-weight:800;border:1px solid #8a5a24}
+#mensaje{position:absolute;left:50%;top:8%;transform:translateX(-50%);background:#000d;border:2px solid var(--oro);color:var(--oro2);font-size:clamp(14px,3.4vw,22px);font-weight:800;padding:8px 26px;border-radius:28px;opacity:0;transition:opacity .25s;white-space:nowrap;z-index:10;text-shadow:0 2px 8px #000}
 #mensaje.ver{opacity:1}
-footer{text-align:center;font-size:10px;color:#7a6540;padding:4px}
+footer{font-size:9px;color:#6b5426;text-align:center;padding:3px;letter-spacing:2px}
 </style></head><body>
-<header>PP SLOTS<small>PLATAFORMA 100% PROPIA</small></header>
-<div id="marco"><div id="slot"><div id="grid"></div></div><div id="mensaje"></div></div>
-<div id="barra">
-  <div class="caja"><span>SALDO</span><b id="saldo">—</b></div>
-  <button class="bmenos" onclick="cambiarCoin(-1)">−</button>
-  <div class="caja"><span>APOSTA</span><b id="apuesta">—</b></div>
-  <button class="bmas" onclick="cambiarCoin(1)">+</button>
-  <button id="girar" onclick="girar()">GIRAR</button>
+
+<div id="splash">
+  <div class="logo">
+    <div class="palabras">
+      <div class="texto">PRAGMATIC</div>
+      <div class="badge"><span>PLAY</span></div>
+    </div>
+  </div>
+  <div id="carga"><div class="fill" id="fill"></div></div>
+  <div class="patience"><i></i><i></i><i></i><i></i><i></i></div>
 </div>
-<footer>MOTOR MATEMATICO PROPIO · RNG LOCAL · SIN TERCEROS</footer>
+
+<div id="escenario">
+  <div class="cinta" id="cintaTop">WILD MULTIPLIERS ON REELS 2, 3 AND 4</div>
+  <div class="marco-slot">
+    <div id="grid"></div>
+  </div>
+  <div id="mensaje"></div>
+</div>
+
+<div id="hud">
+  <div class="circ" onclick="msg('MENU — proximamente',1200)">&#8801;</div>
+  <div class="circ" onclick="msg('INFO — '+(cfg?cfg.nombre:''),1600)">i</div>
+  <div class="circ" onclick="this.style.opacity=this.style.opacity=='0.5'?1:0.5;msg('SONIDO '+(this.style.opacity=='0.5'?'OFF':'ON'),900)">&#9835;</div>
+  <div class="valores">
+    <div class="cajaV"><small>CREDIT</small><b>$<span id="saldo">0.00</span></b></div>
+    <div class="cajaV"><small>BET</small><b>$<span id="apuesta">0.00</span></b></div>
+  </div>
+  <div class="grupoBet">
+    <button class="betBtn" onclick="cambiarCoin(-1)">&#8722;</button>
+    <button id="btnGirar" onclick="girar()"><div class="flecha">&#8635;</div><div class="lblAuto">AUTOPLAY</div></button>
+    <button class="betBtn" onclick="cambiarCoin(1)">+</button>
+  </div>
+</div>
+<footer>POWERED BY PP SLOTS ENGINE</footer>
+
 <script>
-const J = new URLSearchParams(location.search).get('juego') || 'vs20doghouse';
-const grid = document.getElementById('grid');
-let cfg=null, saldo=0, iCoin=3, girando=false;
-const fmt=n=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const J=new URLSearchParams(location.search).get('juego')||'vs20doghouse';
+const fill=document.getElementById('fill');
+let cfg=null,saldo=0,iCoin=3,girando=false;
+const fmt=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const $=id=>document.getElementById(id);
+
+function marcar(p){fill.style.width=Math.max(4,Math.min(100,p))+'%'}
 
 async function init(){
-  const r=await (await fetch('/api/'+J+'/init')).json();
-  cfg=r; saldo=r.saldo;
+  marcar(12);
+  const r=await(await fetch('/api/'+J+'/init')).json();
+  marcar(55);
+  cfg=r;saldo=r.saldo;
+  document.title=r.nombre.replace(' (Propio)','');
   grid.innerHTML='';
   for(let c=0;c<cfg.reels;c++)for(let f=0;f<cfg.rows;f++){
     const d=document.createElement('div');d.className='celda';d.id='c'+c+'_'+f;
-    d.textContent=cfg.simbolos[c][f].glifo;d.style.background='#1c1207';
+    d.textContent=glifo(cfg.simbolos[c][f].id);d.style.color=colorDe(cfg.simbolos[c][f].id);
     grid.appendChild(d);
   }
-  pintar();
+  marcar(85);pintarBarra();
+  await new Promise(o=>setTimeout(o,350));
+  marcar(100);
+  setTimeout(()=>{$('splash').classList.add('fuera');$('escenario').classList.add('ver');msg('PLACE YOUR BETS!',1800)},300);
 }
-function pinta(sim){const s=cfg.catalogo[sim];return s?s.glifo:'?'}
-function color(sim){const s=cfg.catalogo[sim];return s?s.color:'#fff'}
-function pintar(gridData,wins){
+function glifo(id){const s=cfg.catalogo[id];return s?s.glifo:'?'}
+function colorDe(id){const s=cfg.catalogo[id];return s?s.color:'#fff'}
+function pintar(gr,wins){
   for(let c=0;c<cfg.reels;c++)for(let f=0;f<cfg.rows;f++){
-    const el=document.getElementById('c'+c+'_'+f);
-    const sim=gridData?gridData[c][f]:cfg.simbolos[c][f].id;
-    el.textContent=pinta(sim);el.classList.remove('win');
-    el.style.color=color(sim);
+    const el=$('c'+c+'_'+f);el.classList.remove('win','spinUp','spinDown');
+    const sim=gr?gr[c][f]:cfg.simbolos[c][f].id;
+    el.textContent=glifo(sim);el.style.color=colorDe(sim);
   }
-  if(wins)wins.forEach(p=>{const li=cfg.lineas[p.linea-1];for(let c=0;c<p.cols;c++){const el=document.getElementById('c'+c+'_'+li[c]);el.classList.add('win')}});
+  if(wins)wins.forEach(p=>{const li=cfg.lineas[p.linea-1];for(let c=0;c<p.cols;c++)$('c'+c+'_'+li[c]).classList.add('win')});
 }
-function pintarSimple(){for(let c=0;c<cfg.reels;c++)for(let f=0;f<cfg.rows;f++){const el=document.getElementById('c'+c+'_'+f);const sim=cfg.simbolos[c][f].id;el.textContent=pinta(sim);el.style.color=color(sim);el.classList.remove('win')}}
-function msg(t,ms){const m=document.getElementById('mensaje');m.textContent=t;m.classList.add('ver');if(ms)setTimeout(()=>m.classList.remove('ver'),ms)}
-function pintarBarra(){document.getElementById('saldo').textContent=fmt(saldo);document.getElementById('apuesta').textContent=fmt(cfg.lineas_count*cfg.monedas[iCoin])}
+function msg(t,ms){const m=$('mensaje');m.textContent=t;m.classList.add('ver');clearTimeout(m._t);if(ms)m._t=setTimeout(()=>m.classList.remove('ver'),ms)}
+function pintarBarra(){$('saldo').textContent=fmt(saldo);$('apuesta').textContent=fmt(cfg.lineas_count*cfg.monedas[iCoin])}
 function cambiarCoin(d){if(girando)return;iCoin=Math.max(0,Math.min(cfg.monedas.length-1,iCoin+d));pintarBarra()}
 
 async function girar(){
-  if(girando)return;girando=true;document.getElementById('girar').disabled=true;
-  // animacion de scroll
-  let ticks=0;const anim=setInterval(()=>{for(let c=0;c<cfg.reels;c++)for(let f=0;f<cfg.rows;f++){const el=document.getElementById('c'+c+'_'+f);el.classList.toggle('scroll',(ticks+c)%3===0)}ticks++},80);
+  if(girando)return;girando=true;$('btnGirar').disabled=true;$('mensaje').classList.remove('ver');
+  const anim=setInterval(()=>{for(let c=0;c<cfg.reels;c++)for(let f=0;f<cfg.rows;f++){$('c'+c+'_'+f).classList.toggle(((ticks+c)%2)?'spinUp':'spinDown')}ticks++},90);
+  let ticks=0;
   try{
-    const r=await (await fetch('/api/'+J+'/spin',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({coin:cfg.monedas[iCoin]})})).json();
-    clearInterval(anim);
-    if(r.error){msg(r.error.toUpperCase(),2000);return}
-    // revelar columna por columna
-    pintar([]);
-    for(let c=0;c<r.grid.length;c++)for(let f=0;f<cfg.rows;f++){const el=document.getElementById('c'+c+'_'+f);setTimeout(()=>{el.textContent=pinta(r.grid[c][f]);el.style.color=color(r.grid[c][f])},c*120+f*30)}
-    await new Promise(ok=>setTimeout(ok,r.grid.length*120+240));
+    const r=await(await fetch('/api/'+J+'/spin',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({coin:cfg.monedas[iCoin]})})).json();
+    await new Promise(o=>setTimeout(o,420));clearInterval(anim);
+    if(r.error){pintar();msg(r.error.toUpperCase(),2000);return}
+    pintar();
+    for(let c=0;c<r.grid.length;c++)setTimeout(()=>{for(let f=0;f<cfg.rows;f++){const el=$('c'+c+'_'+f);el.textContent=glifo(r.grid[c][f]);el.style.color=colorDe(r.grid[c][f])}},c*110);
+    await new Promise(o=>setTimeout(o,r.grid.length*110+180));
     saldo=r.saldo;pintarBarra();
-    if(r.totalPremio>0){pintar(r.grid,r.premios);msg('GANASTE '+fmt(r.totalPremio)+(r.mejorMult>1?' (x'+r.mejorMult+')':''),2600)}
-    else{pintar(r.grid);msg('SIN PREMIO — SUERTE LA PROXIMA',1200)}
-  }catch(e){clearInterval(anim);msg('ERROR DE RED',1800)}
-  finally{girando=false;document.getElementById('girar').disabled=false}
+    if(r.totalPremio>0){pintar(r.grid,r.premios);msg('WIN $'+fmt(r.totalPremio)+(r.mejorMult>1?'  ·  x'+r.mejorMult:''),2600)}
+    else msg('PLACE YOUR BETS!',1100);
+  }catch(e){clearInterval(anim);msg('NETWORK ERROR',1600)}
+  finally{girando=false;$('btnGirar').disabled=false}
 }
-init();pintarBarra();
+init();
 </script></body></html>
