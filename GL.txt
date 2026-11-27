@@ -1,0 +1,4 @@
+]633;E;for u in 'gs2c/getGameList.do?lang=en' 'gs2c/getGameList.do' 'gs2c/common/v3/getGameList.do?lang=en';bb1de492-671c-486c-bff8-8a603e5af0b7]633;C404 24 gs2c/getGameList.do?lang=en
+404 24 gs2c/getGameList.do
+404 34 gs2c/common/v3/getGameList.do?lang=en
+404 /gs2c/common/v3/getGameList.do

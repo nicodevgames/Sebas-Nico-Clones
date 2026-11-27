@@ -340,8 +340,73 @@ app.get('/propio/:juego', (req, res) => res.sendFile(path.join(__dirname, 'publi
 // Root = LOBBY
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'lobby.html')));
 
-// Precalentador: rota el catalogo abriendo sesiones en background (45s por
-// juego) para que el clic del usuario encuentre la sesion YA lista.
+// ══════════ IMPORTADOR MASIVO ══════════
+const masivo = require('./engine/catalogo-masivo');
+const importador = require('./engine/importador');
+
+// Cargar catalogo persistente y anadir seed sin pisar lo existente
+let seed = storage.leer('seed_catalogo', null);
+if (!seed || !seed.length) {
+  seed = masivo.semilla().map(j => ({ ...j, categoria: 'Por Verificar', estado: 'pendiente' }));
+  // los ya presentes en CATALOGO arrancan activos
+  for (const s of seed) {
+    if (CATALOGO.some(c => c.id === s.id)) { s.estado = 'activo'; s.categoria = (CATALOGO.find(c => c.id === s.id) || {}).categoria || s.categoria; }
+  }
+  storage.guardar('seed_catalogo', seed);
+}
+
+// Validador background: abre openGame.do para pendientes, uno cada 12s.
+// activo = tiene sesion; rate-limit = vuelve a la cola (retry); 404 = no existe.
+let idxValidar = 0;
+setInterval(() => {
+  const pend = seed.filter(s => s.estado === 'pendiente' || /limitado/.test(s.estado || ''));
+  if (!pend.length) return;
+  const s = pend[idxValidar++ % pend.length];
+  obtenerDestino(s.id, { headers: {} })
+    .then(() => { s.estado = 'activo'; storage.guardar('seed_catalogo', seed); console.log('[validador] activo:', s.id); })
+    .catch(e => {
+      const msg = String(e.message || '');
+      if (/limitado|enfriamiento/.test(msg)) { s.estado = 'pendiente'; /* retry en la vuelta */ }
+      else { s.estado = 'no disponible (' + msg.slice(0, 30) + ')'; }
+      storage.guardar('seed_catalogo', seed);
+    });
+}, 12000).unref();
+
+app.get('/api/masivo/estado', (req, res) => {
+  const activos = seed.filter(s => s.estado === 'activo').length;
+  const pend = seed.filter(s => s.estado === 'pendiente').length;
+  res.json({
+    total: seed.length, activos, pendientes: pend,
+    noDisponibles: seed.length - activos - pend,
+    detalle: seed
+  });
+});
+app.post('/api/masivo/importar', async (req, res) => {
+  // fusiona seed con catalogo oficial por getGameList (si estuviera accesible)
+  try {
+    const lista = await importador.traerLista('en');
+    const norm = importador.normalizar(lista);
+    let nuevos = 0;
+    for (const j of norm) {
+      if (!seed.some(s => s.id === j.id)) {
+        seed.push({ ...j, estado: 'pendiente' });
+        nuevos++;
+      }
+    }
+    storage.guardar('seed_catalogo', seed);
+    res.json({ ok: true, nuevos, total: seed.length });
+  } catch (e) { res.json({ ok: false, nota: 'getGameList no disponible, se usa seed interna', seedTotal: seed.length }); }
+});
+// Activar un juego del pool manualmente
+app.post('/api/masivo/activar', (req, res) => {
+  const d = leerJson(req);
+  const s = seed.find(x => x.id === d.id);
+  if (!s) return res.status(404).json({ error: 'no existe en seed' });
+  s.estado = 'activo';
+  if (!CATALOGO.some(c => c.id === s.id)) { CATALOGO.unshift({ id: s.id, nombre: s.nombre, categoria: s.categoria }); salvarCatalogo(); }
+  storage.guardar('seed_catalogo', seed);
+  res.json({ ok: true, juego: s.id, estado: s.estado });
+});
 const PRECALENTAR_CADA_MS = 360000;
 let indicePrecalentar = 0;
 setInterval(() => {

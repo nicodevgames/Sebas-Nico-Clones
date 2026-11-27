@@ -1,0 +1,2 @@
+masivo=200
+pool 127 | activos 18 | pend 109 | noDisp 0

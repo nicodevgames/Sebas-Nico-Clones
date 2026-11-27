@@ -1,0 +1,33 @@
+71:  if (cooldownHasta[juego] && Date.now() < cooldownHasta[juego]) {
+72:    throw new Error('demo en enfriamiento (' + Math.ceil((cooldownHasta[juego] - Date.now()) / 1000) + 's)');
+93:  cooldownHasta[juego] = Date.now() + 90000; // 90s de enfriamiento por juego
+418:  if (cooldownHasta[j.id] && Date.now() < cooldownHasta[j.id]) return;
+
+async function obtenerDestino(juego, req) {
+  const c = cacheSesiones[juego];
+  if (c && Date.now() - c.ts < 480000) return c.destino;
+  if (cooldownHasta[juego] && Date.now() < cooldownHasta[juego]) {
+    throw new Error('demo en enfriamiento (' + Math.ceil((cooldownHasta[juego] - Date.now()) / 1000) + 's)');
+  }
+  let ultimoError = null;
+  // Backoff creciente: 1s, 4s, 8s. Alterna hosts.
+  const esperas = [1000, 4000, 8000];
+  for (let i = 0; i < 3; i++) {
+    const host = HOSTS[i % HOSTS.length];
+    try {
+      const r = await fetch(host + '/gs2c/openGame.do?gameSymbol=' + juego + '&jurisdiction=99&lang=en', { headers: cabeceras(req), redirect: 'manual' });
+      guardarCookies(r);
+      const destino = r.headers.get('location');
+      if (destino) {
+        cacheSesiones[juego] = { destino, ts: Date.now() };
+        return destino;
+      }
+      const cuerpo = await r.text();
+      ultimoError = new Error(cuerpo.includes('error has occurred') ? 'demo limitado temporalmente' : 'openGame HTTP ' + r.status);
+    } catch (e) { ultimoError = e; }
+    await new Promise(ok => setTimeout(ok, esperas[i]));
+  }
+  if (c) return c.destino;
+  cooldownHasta[juego] = Date.now() + 90000; // 90s de enfriamiento por juego
+  throw ultimoError || new Error('openGame agoto reintentos');
+}

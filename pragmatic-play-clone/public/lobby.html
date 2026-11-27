@@ -55,7 +55,15 @@ async function load(){
     if(m.lema){document.getElementById('marcaLema').textContent='· '+m.lema;}
     if(m.hero) document.getElementById('heroTitulo').textContent=m.hero;
   }catch(e){}
-  const r=await(await fetch('/api/catalogo')).json();DATA=r;pintar('');
+  const r=await(await fetch('/api/catalogo')).json();
+  let extras=[];
+  try{const mj=await(await fetch('/api/masivo/estado')).json();
+    // del pool masivo, los validados activos y aun no en catalogo entran tambien
+    extras=(mj.detalle||[]).filter(j=>j.estado==='activo');
+  }catch(e){}
+  const enCat=new Set(r.map(j=>j.id));
+  DATA=[...r,...extras.filter(j=>!enCat.has(j.id))];
+  pintar('');
 }
 function pintar(q){
   q=(q||'').toLowerCase();
