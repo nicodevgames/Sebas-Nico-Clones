@@ -21,3 +21,7 @@ DG.txt
 DL.txt
 LD.txt
 pragmatic-play-clone/data/
+pragmatic-play-clone/engine/simbolos_reales.json
+pragmatic-play-clone/engine/game_slugs.txt
+pragmatic-play-clone/engine/mina*.log
+pragmatic-play-clone/data/pool_limpio.json

@@ -1,0 +1,15 @@
+POOL LIMPIO: 233 juegos
+categorias: {'Slots': 155, 'Wilds': 18, 'Oro': 11, 'Animales': 10, 'Asia': 8, 'Dulces': 6, 'Dog House': 4, 'Temporada': 4, 'Megaways': 3, 'Egipto': 3, 'Jackpots': 2, 'Frutales': 2}
+muestras:
+  vs20nilefort | Nile Fortune | Slots
+  vs50northgard | North Guardians | Slots
+  vs20octobeer | Octobeer Fortunes | Animales
+  vs10frontrun | Odds On Winner | Slots
+  vs10noodles | Oodles of Noodles | Slots
+  vs20oragold | Oracle of Gold | Oro
+  vs25pandagold | Pandas Fortune | Animales
+  vs10diamondrgh | Temple Guardians | Slots
+  vs1024temuj | Temujin Treasures | Slots
+  vs20bigdawgs | The Big Dawgs | Slots
+  vs30catz | The Catfather Part II | Animales
+  vs9catz | The Catfather | Animales
