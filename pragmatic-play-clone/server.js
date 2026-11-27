@@ -248,6 +248,23 @@ app.get('/propio/:juego', (req, res) => res.sendFile(path.join(__dirname, 'publi
 // Root = LOBBY
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'lobby.html')));
 
+// Precalentador: rota el catalogo abriendo sesiones en background (45s por
+// juego) para que el clic del usuario encuentre la sesion YA lista.
+const PRECALENTAR_CADA_MS = 360000;
+let indicePrecalentar = 0;
+setInterval(() => {
+  if (!CATALOGO.length) return;
+  const j = CATALOGO[indicePrecalentar % CATALOGO.length];
+  indicePrecalentar++;
+  const c = cacheSesiones[j.id];
+  if (c && Date.now() - c.ts < 480000) return;
+  if (cooldownHasta[j.id] && Date.now() < cooldownHasta[j.id]) return;
+  obtenerDestino(j.id, { headers: {} })
+    .then(() => console.log('[precalentar] sesion lista:', j.id))
+    .catch(() => { /* reintenta en el proximo ciclo */ });
+}, 45000).unref();
+setInterval(() => { indicePrecalentar = 0; }, PRECALENTAR_CADA_MS).unref();
+
 // ══════════ MODO REFERENCIA DEMO (opcional, ?origen=demo) ══════════
 app.get('/demo', async (req, res) => {
   const juego = String(req.query.juego || 'vs20doghouse').replace(/[^a-z0-9-]/gi, '');
