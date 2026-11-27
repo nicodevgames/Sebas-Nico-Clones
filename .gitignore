@@ -3,6 +3,5 @@ node_modules/
 nohup.out
 .DS_Store
 *.tmp
-*.txt
-!docs/**/*.txt
-*.json.tmp
+# Diagnostic dumps only at repo root
+/*.txt
