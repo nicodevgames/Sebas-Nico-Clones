@@ -4,4 +4,19 @@ nohup.out
 .DS_Store
 *.tmp
 # Diagnostic dumps only at repo root
-/*.txt
+/*.txtmirror/
+HVI.txt
+HI.txt
+HB*.txt
+HV*.json
+GS*.txt
+MF.txt
+RK.txt
+RU.txt
+RE.txt
+PK*.txt
+HD*.txt
+HR*.txt
+DG.txt
+DL.txt
+LD.txt

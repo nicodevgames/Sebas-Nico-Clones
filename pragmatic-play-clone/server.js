@@ -5,6 +5,7 @@ const express = require('express');
 const path = require('path');
 const motor = require('./engine/motor');
 const generador = require('./engine/generador');
+const harvest = require('./engine/harvest');
 
 const DEMO = 'https://demogamesfree.pragmaticplay.net';
 const JUEGO = '/gs2c/common/v3/games-html5/games/vs/vs20doghouse/';
@@ -142,6 +143,28 @@ app.post('/api/clonar', (req, res) => {
     res.json({ ok: true, juego: id, ruta: r.ruta, simbolos: r.juego.simbolos_ids });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
+
+// ══════════ HARVEST: espejo offline de assets oficiales ══════════
+// POST /api/harvest { juego: 'vs20xxxx', max? }
+//   Descarga al mirror local TODA la cadena de assets del juego (art, js,
+//   sonidos, atlas). Luego el clon sirve esos assets desde /mirror/...
+let cosechando = false;
+app.post('/api/harvest', async (req, res) => {
+  const d = leerJson(req);
+  const juego = String(d.juego || '').replace(/[^a-z0-9-]/gi, '');
+  if (!juego) return res.status(400).json({ error: 'falta juego' });
+  if (cosechando) return res.status(429).json({ error: 'hay una captura en curso' });
+  cosechando = true;
+  try {
+    const log = await harvest.capturar(juego, { max: Number(d.max) || 400 });
+    res.json({ ok: true, juego, archivos: log.bajados.length, kb: log.kb, fallidos: log.fallidos.length, resumen: log.resumen });
+  } catch (e) {
+    res.status(502).json({ error: e.message });
+  } finally { cosechando = false; }
+});
+
+// espejo de assets descargados (offline)
+app.use('/mirror', express.static(harvest.DIR_MIRROR, { maxAge: '7d' }));
 
 // ══════════ MODO REFERENCIA DEMO (opcional, ?origen=demo) ══════════
 app.get('/demo', async (req, res) => {

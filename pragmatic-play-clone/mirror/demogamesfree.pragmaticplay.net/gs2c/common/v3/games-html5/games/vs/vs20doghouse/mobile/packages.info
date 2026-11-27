@@ -1,0 +1,21 @@
+{"default_sound_suffix":"",
+ "languages":[
+  {"language":"de","bundles":[{"name":"de"},{"name":"de_GUI"}]},
+  {"language":"es","bundles":[{"name":"es"},{"name":"es_GUI"}]},
+  {"language":"fr","bundles":[{"name":"fr"},{"name":"fr_GUI"}]},
+  {"language":"it","bundles":[{"name":"it"},{"name":"it_GUI"}]},
+  {"language":"ko","bundles":[{"name":"ko"},{"name":"ko_GUI"}]},
+  {"language":"ru","bundles":[{"name":"ru"},{"name":"ru_GUI"}]},
+  {"language":"zh","bundles":[{"name":"zh"},{"name":"zh_GUI"}]},
+  {"language":"th","bundles":[{"name":"th"},{"name":"th_GUI"}]},
+  {"language":"vi","bundles":[{"name":"vi"},{"name":"vi_GUI"}]},
+  {"language":"ja","bundles":[{"name":"ja"},{"name":"ja_GUI"}]},
+  {"language":"sv","bundles":[{"name":"sv"},{"name":"sv_GUI"}]},
+  {"language":"no","bundles":[{"name":"no"},{"name":"no_GUI"}]},
+  {"language":"fi","bundles":[{"name":"fi"},{"name":"fi_GUI"}]},
+  {"language":"ro","bundles":[{"name":"ro"},{"name":"ro_GUI"}]},
+  {"language":"tr","bundles":[{"name":"tr"},{"name":"tr_GUI"}]},
+  {"language":"da","bundles":[{"name":"da"},{"name":"da_GUI"}]},
+  {"language":"id","bundles":[{"name":"id"},{"name":"id_GUI"}]},
+  {"language":"zt","bundles":[{"name":"zt"},{"name":"zt_GUI"}]}
+]}

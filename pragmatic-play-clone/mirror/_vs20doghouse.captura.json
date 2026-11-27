@@ -1,0 +1,659 @@
+{
+  "juego": "vs20doghouse",
+  "pagina": "https://demogamesfree.pragmaticplay.net/gs2c/html5Game.do?extGame=1&symbol=vs20doghouse&gname=The Dog House&jurisdictionID=99&mgckey=stylename@generic~SESSION@381dba92-b539-48ea-a1f6-92c30e5e14b1",
+  "bajados": [
+    "/gs2c/html5Game.do?extGame=1&symbol=vs20doghouse&gname=The Dog House&jurisdictionID=99&mgckey=stylename@generic~SESSION@381dba92-b539-48ea-a1f6-92c30e5e14b1",
+    "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/bootstrap.js",
+    "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/bootstrap.js",
+    "/gs2c/common/js/html5-script-external.js",
+    "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/build.js",
+    "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/customizations.info",
+    "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/style.css",
+    "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/build.js",
+    "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/customizations.info",
+    "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/style.css",
+    "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/packages.info",
+    "/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/packages.info"
+  ],
+  "fallidos": [
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/bootstrap.js",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/logo_info.js",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/build.js?key=2c8378a091d24f4f6b1576a98dc87325",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/build.js?key=2c8378a091d24f4f6b1576a98dc87325",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/build.js?key=2c8378a091d24f4f6b1576a98dc87325",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/game000?key=e0da803ec38b1b1989922e4d80ea7fb9",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/game000?key=e0da803ec38b1b1989922e4d80ea7fb9",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/game000?key=e0da803ec38b1b1989922e4d80ea7fb9",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/game001?key=2f69b6f3d9022b72d8b52ae8869654ff",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/game001?key=2f69b6f3d9022b72d8b52ae8869654ff",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/game001?key=2f69b6f3d9022b72d8b52ae8869654ff",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/game002?key=152146e2eec0614574ca425fe535d712",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/game002?key=152146e2eec0614574ca425fe535d712",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/game002?key=152146e2eec0614574ca425fe535d712",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/game003?key=d8d746061bfeb4697b02e8395efb18ae",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/game003?key=d8d746061bfeb4697b02e8395efb18ae",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/game003?key=d8d746061bfeb4697b02e8395efb18ae",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources000?key=b4fc1468d8f818667aed9065d3e0239d",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources000?key=b4fc1468d8f818667aed9065d3e0239d",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources000?key=b4fc1468d8f818667aed9065d3e0239d",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources001?key=50c42d808aef32cf272e08679c49afa9",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources001?key=50c42d808aef32cf272e08679c49afa9",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources001?key=50c42d808aef32cf272e08679c49afa9",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources002?key=cf957b0fafeca0807fede7b240d7f9ae",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources002?key=cf957b0fafeca0807fede7b240d7f9ae",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources002?key=cf957b0fafeca0807fede7b240d7f9ae",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources003?key=529a5f6c5e94afebc4b137bea9b33941",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources003?key=529a5f6c5e94afebc4b137bea9b33941",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources003?key=529a5f6c5e94afebc4b137bea9b33941",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources004?key=bae678c1e74deb58a69261874312ed9b",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources004?key=bae678c1e74deb58a69261874312ed9b",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources004?key=bae678c1e74deb58a69261874312ed9b",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources005?key=f425499ba455f8e6d799408c5a61f366",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources005?key=f425499ba455f8e6d799408c5a61f366",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources005?key=f425499ba455f8e6d799408c5a61f366",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources006?key=83b646e4e43f561e46999f0e5ea868f7",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources006?key=83b646e4e43f561e46999f0e5ea868f7",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources006?key=83b646e4e43f561e46999f0e5ea868f7",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources007?key=497c7c5ce81037836abc3ec6d4821437",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources007?key=497c7c5ce81037836abc3ec6d4821437",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources007?key=497c7c5ce81037836abc3ec6d4821437",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources008?key=5ac5478237cc41d02e0b0a8fff767639",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources008?key=5ac5478237cc41d02e0b0a8fff767639",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources008?key=5ac5478237cc41d02e0b0a8fff767639",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources009?key=3d0cf166fa146a1f04d30d58870bcc98",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources009?key=3d0cf166fa146a1f04d30d58870bcc98",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources009?key=3d0cf166fa146a1f04d30d58870bcc98",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources010?key=d11596cd0598a420f81dbaf888c61937",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources010?key=d11596cd0598a420f81dbaf888c61937",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources010?key=d11596cd0598a420f81dbaf888c61937",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources011?key=3c6edc969da5979744b9ecc253ccc07e",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources011?key=3c6edc969da5979744b9ecc253ccc07e",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources011?key=3c6edc969da5979744b9ecc253ccc07e",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources012?key=a2d237f4076bb4f6055a019f417de6c4",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources012?key=a2d237f4076bb4f6055a019f417de6c4",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources012?key=a2d237f4076bb4f6055a019f417de6c4",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources013?key=f3c1547a9105295bdabf1f1d26dc56d5",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources013?key=f3c1547a9105295bdabf1f1d26dc56d5",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources013?key=f3c1547a9105295bdabf1f1d26dc56d5",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources014?key=d591378d119834e18d827842a3fa6ccf",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources014?key=d591378d119834e18d827842a3fa6ccf",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources014?key=d591378d119834e18d827842a3fa6ccf",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources015?key=be61d1ea7c317309d770826e31ee5d9c",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources015?key=be61d1ea7c317309d770826e31ee5d9c",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources015?key=be61d1ea7c317309d770826e31ee5d9c",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources016?key=7c1e65821277a752b7044c2d61a3ec99",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources016?key=7c1e65821277a752b7044c2d61a3ec99",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources016?key=7c1e65821277a752b7044c2d61a3ec99",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources017?key=f352e14e005a206b4f2b8916a154e489",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources017?key=f352e14e005a206b4f2b8916a154e489",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources017?key=f352e14e005a206b4f2b8916a154e489",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources018?key=bba62cef29f0244f03116d57948828e7",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources018?key=bba62cef29f0244f03116d57948828e7",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources018?key=bba62cef29f0244f03116d57948828e7",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources019?key=8bc339eadc74d9e9836458e591e750de",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources019?key=8bc339eadc74d9e9836458e591e750de",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources019?key=8bc339eadc74d9e9836458e591e750de",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources020?key=67e1fe369bb3eee11ba1a7609e90b2fe",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources020?key=67e1fe369bb3eee11ba1a7609e90b2fe",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources020?key=67e1fe369bb3eee11ba1a7609e90b2fe",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources021?key=aeb53e0337bed1a1a40d7dde0472b238",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources021?key=aeb53e0337bed1a1a40d7dde0472b238",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources021?key=aeb53e0337bed1a1a40d7dde0472b238",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/main_resources022?key=c524a189ceecf5a21845cefeab9f64ff",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/main_resources022?key=c524a189ceecf5a21845cefeab9f64ff",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/main_resources022?key=c524a189ceecf5a21845cefeab9f64ff",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/other_resources000?key=5193caf2ba9c634628af21fb0ab0c4f1",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/other_resources000?key=5193caf2ba9c634628af21fb0ab0c4f1",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/other_resources000?key=5193caf2ba9c634628af21fb0ab0c4f1",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/other_resources001?key=30e30d0631e96347e77b6aad90c882ac",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/other_resources001?key=30e30d0631e96347e77b6aad90c882ac",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/other_resources001?key=30e30d0631e96347e77b6aad90c882ac",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI000?key=281fc8e7412a53f3486f9737fe9b4406",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI000?key=281fc8e7412a53f3486f9737fe9b4406",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI000?key=281fc8e7412a53f3486f9737fe9b4406",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI001?key=826d8da6a342fd51b8393b6d5e2eba8d",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI001?key=826d8da6a342fd51b8393b6d5e2eba8d",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI001?key=826d8da6a342fd51b8393b6d5e2eba8d",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI002?key=0ae6c06b17be19876546c08437aa4903",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI002?key=0ae6c06b17be19876546c08437aa4903",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI002?key=0ae6c06b17be19876546c08437aa4903",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI003?key=4cc2f832670f89052fda7f9a04c1a749",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI003?key=4cc2f832670f89052fda7f9a04c1a749",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI003?key=4cc2f832670f89052fda7f9a04c1a749",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI004?key=8e55f98fa90324fba285dbb89b2674b2",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI004?key=8e55f98fa90324fba285dbb89b2674b2",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI004?key=8e55f98fa90324fba285dbb89b2674b2",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI005?key=f5f2bc96d4d2a499ea0973f403393d11",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI005?key=f5f2bc96d4d2a499ea0973f403393d11",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI005?key=f5f2bc96d4d2a499ea0973f403393d11",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI006?key=586a84fe34c91cdcc091d1a7490e196a",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI006?key=586a84fe34c91cdcc091d1a7490e196a",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI006?key=586a84fe34c91cdcc091d1a7490e196a",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI_resources000?key=1572a8bd59e23179529723d8a56a6c31",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI_resources000?key=1572a8bd59e23179529723d8a56a6c31",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI_resources000?key=1572a8bd59e23179529723d8a56a6c31",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI_resources001?key=698178026af94c41d18a1f42de715158",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI_resources001?key=698178026af94c41d18a1f42de715158",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI_resources001?key=698178026af94c41d18a1f42de715158",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/versions.info",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/ic_launcher.png",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/mobile_client/games/prop.info",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/GUI_sounds.mp3",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI007?key=5ec081eea8b106237595ce8e09713130",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI007?key=5ec081eea8b106237595ce8e09713130",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI007?key=5ec081eea8b106237595ce8e09713130",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI008?key=174e89cdb6ddd7e8f935204720672f6a",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI008?key=174e89cdb6ddd7e8f935204720672f6a",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI008?key=174e89cdb6ddd7e8f935204720672f6a",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI009?key=ad05d3eb1fc273c60abecbf885e3502b",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI009?key=ad05d3eb1fc273c60abecbf885e3502b",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI009?key=ad05d3eb1fc273c60abecbf885e3502b",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI010?key=35fb5b4baf4f4e414c886466bf512a00",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI010?key=35fb5b4baf4f4e414c886466bf512a00",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI010?key=35fb5b4baf4f4e414c886466bf512a00",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/GUI011?key=9e9b816c7637cea368e471953dbee0d3",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/v2/GUI011?key=9e9b816c7637cea368e471953dbee0d3",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/res/GUI011?key=9e9b816c7637cea368e471953dbee0d3",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/ic_launcher.png",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/GUI_sounds.mp3",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/pixi.js",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/src/index.js",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/package.json",
+      "estado": 403
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/component.info",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/localization.info",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/versions.info",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/gid.info",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/this.mSprite.atlas",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/_client.json",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/thumbnail.atlas",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/pixi.js",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/src/index.js",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/component.info",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/localization.info",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/versions.info",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/gid.info",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/this.mSprite.atlas",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/_client.json",
+      "estado": 404
+    },
+    {
+      "url": "https://demogamesfree.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/mobile/thumbnail.atlas",
+      "estado": 404
+    }
+  ],
+  "bytes": 6669202,
+  "packsDetectados": 36,
+  "kb": 6513
+}
