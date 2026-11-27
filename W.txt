@@ -1,0 +1,5 @@
+deposito=000
+
+clonar=000
+
+catalogo=000

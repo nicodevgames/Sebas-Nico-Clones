@@ -193,7 +193,8 @@ app.post('/api/harvest', async (req, res) => {
 app.use('/mirror', express.static(harvest.DIR_MIRROR, { maxAge: '7d' }));
 
 // ══════════ LOBBY + JUEGOS ORIGINALES (cliente real de Pragmatic) ══════════
-const CATALOGO = [
+// Catalogo DINAMICO: persistido en data/catalogo.json, editable por API.
+const DEFAULT_CATALOGO = [
   { id: 'vs20doghouse', nombre: 'The Dog House', categoria: 'Populares' },
   { id: 'vs20doghousemegaways', nombre: 'The Dog House Megaways', categoria: 'Populares' },
   { id: 'vs20sweetbonanza', nombre: 'Sweet Bonanza', categoria: 'Populares' },
@@ -213,12 +214,103 @@ const CATALOGO = [
   { id: 'vs20aztecgems', nombre: 'Aztec Gems', categoria: 'Clasicos' },
   { id: 'vs20hotfiesta', nombre: 'Hot Fiesta', categoria: 'Fiesta' }
 ];
+let CATALOGO = storage.leer('catalogo', DEFAULT_CATALOGO);
+if (!Array.isArray(CATALOGO) || !CATALOGO.length) CATALOGO = DEFAULT_CATALOGO;
+function salvarCatalogo() { storage.guardar('catalogo', CATALOGO); }
 
+// Clonador completo en 1 paso: valida contra Pragmatic, calienta sesion,
+// crea plantilla y agrega al catalogo visible.
+app.post('/api/clonar-completo', async (req, res) => {
+  const d = leerJson(req);
+  const id = String(d.id || '').replace(/[^a-z0-9-]/gi, '');
+  if (!id) return res.status(400).json({ error: 'falta id (ej: vs20flaminghot)' });
+  const nombre = String(d.nombre || id).slice(0, 60);
+  const categoria = String(d.categoria || 'Novedades').slice(0, 24);
+  try {
+    const resultado = { id, nombre, pasos: {} };
+    try {
+      const dest = await obtenerDestino(id, req);
+      resultado.pasos.sesionPragmatic = 'ok';
+      resultado.pasos.urlCliente = dest.split('?')[0];
+    } catch (e) { resultado.pasos.sesionPragmatic = 'pendiente (' + e.message + ')'; }
+    if (!motor.cargarJuego(id)) {
+      generador.base(id, { nombre, tema: d.tema || 'clasico' });
+      resultado.pasos.plantilla = 'creada';
+    } else resultado.pasos.plantilla = 'ya existia';
+    if (d.fixture) {
+      generador.desdeFixture(String(d.fixture), id, { nombre });
+      resultado.pasos.paytableReal = 'importada';
+    }
+    if (!CATALOGO.some(j => j.id === id)) {
+      CATALOGO.unshift({ id, nombre, categoria });
+      salvarCatalogo();
+      resultado.pasos.catalogo = 'agregado';
+    } else resultado.pasos.catalogo = 'ya estaba';
+    res.json({ ok: true, ...resultado });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// Gestion del catalogo
 app.get('/api/catalogo', (req, res) => {
   res.json(CATALOGO.map(j => ({
     ...j, href: '/jugar/' + j.id,
     plantillaExiste: !!motor.cargarJuego(j.id)
   })));
+});
+app.post('/api/catalogo/agregar', (req, res) => {
+  const d = leerJson(req);
+  const id = String(d.id || '').replace(/[^a-z0-9-]/gi, '');
+  if (!id) return res.status(400).json({ error: 'falta id' });
+  if (!CATALOGO.some(j => j.id === id)) {
+    CATALOGO.unshift({ id, nombre: String(d.nombre || id).slice(0, 60), categoria: String(d.categoria || 'Novedades').slice(0, 24) });
+    salvarCatalogo();
+  }
+  res.json({ ok: true, total: CATALOGO.length });
+});
+app.post('/api/catalogo/quitar', (req, res) => {
+  const d = leerJson(req);
+  CATALOGO = CATALOGO.filter(j => j.id !== String(d.id || ''));
+  salvarCatalogo();
+  res.json({ ok: true, total: CATALOGO.length });
+});
+
+// ══════════ WALLET (bisagra para dinero real) ══════════
+// Ledger persistente; enchufa tu pasarela (MercadoPago/cripto/etc) a estos
+// endpoints desde tu backend de pagos.
+let transacciones = storage.leer('transacciones', []);
+function anotarTx(tx) {
+  transacciones.unshift(tx);
+  transacciones = transacciones.slice(0, 5000);
+  storage.guardar('transacciones', transacciones);
+}
+app.post(['/api/wallet/depositar', '/api/wallet/deposito'], (req, res) => {
+  const d = leerJson(req);
+  const usuario = String(d.usuario || '').replace(/[^a-zA-Z0-9_-]/g, '');
+  const monto = +(+d.monto || 0).toFixed(2);
+  if (!usuario || monto <= 0) return res.status(400).json({ error: 'usuario y monto requeridos' });
+  const cta = storage.aplicar(usuario, monto, {});
+  const tx = { id: 'tx_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), usuario, tipo: 'deposito', monto, saldo: cta.saldo, fecha: new Date().toISOString() };
+  anotarTx(tx);
+  res.json({ ok: true, ...tx });
+});
+app.post('/api/wallet/retirar', (req, res) => {
+  const d = leerJson(req);
+  const usuario = String(d.usuario || '').replace(/[^a-zA-Z0-9_-]/g, '');
+  const monto = +(+d.monto || 0).toFixed(2);
+  if (!usuario || monto <= 0) return res.status(400).json({ error: 'usuario y monto requeridos' });
+  const cta = storage.usuario(usuario);
+  if (monto > cta.saldo) return res.status(400).json({ error: 'saldo insuficiente', saldo: cta.saldo });
+  const c2 = storage.aplicar(usuario, -monto, {});
+  const tx = { id: 'tx_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), usuario, tipo: 'retiro', monto, saldo: c2.saldo, fecha: new Date().toISOString() };
+  anotarTx(tx);
+  res.json({ ok: true, ...tx });
+});
+app.get('/api/wallet/saldo/:usuario', (req, res) => {
+  const c = storage.usuario(String(req.params.usuario).replace(/[^a-zA-Z0-9_-]/g, ''));
+  res.json({ usuario: req.params.usuario, saldo: c.saldo });
+});
+app.get('/api/wallet/transacciones/:usuario', (req, res) => {
+  res.json(transacciones.filter(t => t.usuario === req.params.usuario).slice(0, 100));
 });
 
 app.get('/lobby', (req, res) => res.sendFile(path.join(__dirname, 'public', 'lobby.html')));

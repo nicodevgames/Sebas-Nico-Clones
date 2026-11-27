@@ -28,30 +28,34 @@ input{background:#0d0803;border:1px solid #4a3010;border-radius:8px;color:#fff;p
 .meta span{color:#9a7c4a;font-size:11px}
 .stat{display:inline-block;margin-top:6px;background:#0d0803;border:1px solid #4a3010;color:#8fdc7a;font-size:10px;padding:2px 8px;border-radius:8px}
 .aviso{background:#1d1508;border:1px solid #4a3010;border-radius:12px;padding:12px 16px;color:#c9a06a;font-size:13px;margin-top:34px;line-height:1.6}
-aviso b{color:#ffd66e}
+.aviso b{color:#ffd66e}
 </style></head><body>
 <div class="bar">
-  <div class="brand"><div class="dot"></div>PP SLOTS <span class="sub">· CLON PLATAFORMA</span></div>
+  <div class="brand"><div class="dot"></div><span id="marcaNombre">PP SLOTS</span> <span class="sub" id="marcaLema">· PLATAFORMA PROPIA</span></div>
   <div class="lupa"><input id="q" placeholder="Buscar juego…"><button class="btnbuscar" onclick="buscar()">Buscar</button></div>
 </div>
 <div class="wrap">
-  <div class="hero"><h1>CATÁLOGO PRAGMATIC — ORIGINAL 100%</h1><p>Juegos reales corriendo con su cliente oficial · soporte offline vía espejo</p></div>
+  <div class="hero"><h1 id="heroTitulo">CATÁLOGO DE JUEGOS</h1><p>Todos los títulos disponibles · sesión instantánea · saldos reales por usuario</p></div>
   <div id="cats"></div>
-  <div class="aviso"><b>¿Cómo funciona?</b> Cada tarjeta abre el juego con su cliente real de Pragmatic sirviendo los assets desde el CDN/demo. Los packs descargados quedan espejados en <b>/mirror/</b>. La matematica mostrada es la del proveedor; tu motor propio queda disponible con <b>?origen=propio</b>.</div>
+  <div class="aviso"><b>Gestión:</b> agregá cualquier juego de Pragmatic con <b>POST /api/clonar-completo</b> {id}. Fondos y retiros por <b>/api/wallet/*</b>. Catálogo editable en caliente: <b>/api/catalogo/agregar|quitar</b>.</div>
 </div>
 <script>
-const ICO={dog:'🐶',bonanza:'🍬',olympus:'⚡',sweet:'🍭',gold:'🐺',fruit:'🍓',bass:'🎣',egypt:'🏺',fire:'🔥',kraken:'🐙',rhino:'🦏',gem:'💎',dragon:'🐲',star:'⭐',wolf:'🐺',fortune:'🪙',money:'💰',platinum:'👑',hold:'🔒',link:'🔗'};
+const ICO={dog:'🐶',bonanza:'🍬',olympus:'⚡',sweet:'🍭',gold:'🐺',fruit:'🍓',bass:'🎣',egypt:'🏺',fire:'🔥',kraken:'🐙',rhino:'🦏',gem:'💎',dragon:'🐲',star:'⭐',wolf:'🐺',fortune:'🪙',money:'💰',platinum:'👑',hold:'🔒',link:'🔗',fiesta:'🎉',wild:'🤠',aztec:'🗿'};
 function ico(nombre){const n=(nombre||'').toLowerCase();for(const k in ICO)if(n.includes(k))return ICO[k];return '🎰'}
 function card(j){
   return `<div class="card" onclick="location.href='/jugar/${j.id}'">
-    <div class="thumb"><span>${ico(j.nombre)}</span><span class="badge-demo">DEMO</span></div>
-    <div class="meta"><b>${j.nombre}</b><span>${j.id}</span><br><span class="stat">▶ JUGAR AHORA</span></div>
+    <div class="thumb"><span>${ico(j.nombre)}</span></div>
+    <div class="meta"><b>${j.nombre}</b><span>${j.categoria}</span><br><span class="stat">▶ JUGAR</span></div>
   </div>`;
 }
 let DATA=[];
 async function load(){
-  const r=await(await fetch('/api/catalogo')).json();DATA=r;
-  pintar('');
+  try{const m=await(await fetch('/api/marca')).json();
+    if(m.nombre){document.getElementById('marcaNombre').textContent=m.nombre;}
+    if(m.lema){document.getElementById('marcaLema').textContent='· '+m.lema;}
+    if(m.hero) document.getElementById('heroTitulo').textContent=m.hero;
+  }catch(e){}
+  const r=await(await fetch('/api/catalogo')).json();DATA=r;pintar('');
 }
 function pintar(q){
   q=(q||'').toLowerCase();
