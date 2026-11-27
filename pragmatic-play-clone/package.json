@@ -1,0 +1,22 @@
+{
+  "name": "pragmatic-play-clone",
+  "version": "1.0.0",
+  "description": "CLON EXACTO - Pragmatic Play Dog House Motor + Backend Completo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo 'Testing server health...' && curl http://localhost:3000/health"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": ["pragmatic", "slots", "gaming", "motor"],
+  "author": "nicodevromerogames@gmail.com",
+  "license": "MIT"
+}
