@@ -1,3 +1,0 @@
-masivo=200
-pool: 127 activos: 18 pendientes: 107 noDisp: 2
-Proxy Dog House en http://localhost:3100/gs2c/common/v3/games-html5/games/vs/vs20doghouse/
