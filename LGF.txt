@@ -1,0 +1,11 @@
+Proxy Dog House en http://localhost:3100/gs2c/common/v3/games-html5/games/vs/vs20doghouse/
+18:01:34 GET /favicon.ico
+   sesion abierta stylename@generic~SESSIO
+   -> 204 null null
+18:01:42 GET /favicon.ico
+   -> 204 null null
+18:01:51 GET /favicon.ico
+   -> 204 null null
+LISTEN 0      511                                         *:3100             *:*    users:(("node",pid=2375145,fd=18))          
+2375104
+2375145

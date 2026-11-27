@@ -191,6 +191,11 @@ app.post('/api/harvest', async (req, res) => {
 
 // espejo de assets descargados (offline)
 app.use('/mirror', express.static(harvest.DIR_MIRROR, { maxAge: '7d' }));
+// caratulas oficiales (simbolo -> url de imagen real de Pragmatic)
+app.get('/caratulas.json', (req, res) => {
+  try { res.sendFile(path.join(__dirname, 'engine', 'caratulas.json')); }
+  catch (e) { res.json({}); }
+});
 
 // ══════════ LOBBY + JUEGOS ORIGINALES (cliente real de Pragmatic) ══════════
 // Catalogo DINAMICO: persistido en data/catalogo.json, editable por API.

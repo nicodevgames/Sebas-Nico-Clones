@@ -22,6 +22,9 @@ input{background:#0d0803;border:1px solid #4a3010;border-radius:8px;color:#fff;p
 .card:hover{transform:translateY(-4px);border-color:#f6a91d;box-shadow:0 10px 30px #000a}
 .thumb{aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;font-size:52px;background:radial-gradient(circle at 50% 40%,#3a2210,#160c04);position:relative}
 .thumb .img{width:100%;height:100%;object-fit:cover}
+.thumbimg{width:100%;height:100%;object-fit:cover;image-rendering:auto}
+.card.pend{opacity:.82}
+.card.pend .badge-demo{border-color:#8a6a3a;color:#c9a06a}
 .badge-demo{position:absolute;top:8px;right:8px;background:#000c;border:1px solid #f6a91d;color:#ffd66e;font-size:9px;padding:2px 8px;border-radius:10px;letter-spacing:1px}
 .meta{padding:10px 12px}
 .meta b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -43,26 +46,39 @@ input{background:#0d0803;border:1px solid #4a3010;border-radius:8px;color:#fff;p
 const ICO={dog:'🐶',bonanza:'🍬',olympus:'⚡',sweet:'🍭',gold:'🐺',fruit:'🍓',bass:'🎣',egypt:'🏺',fire:'🔥',kraken:'🐙',rhino:'🦏',gem:'💎',dragon:'🐲',star:'⭐',wolf:'🐺',fortune:'🪙',money:'💰',platinum:'👑',hold:'🔒',link:'🔗',fiesta:'🎉',wild:'🤠',aztec:'🗿'};
 function ico(nombre){const n=(nombre||'').toLowerCase();for(const k in ICO)if(n.includes(k))return ICO[k];return '🎰'}
 function card(j){
-  return `<div class="card" onclick="location.href='/jugar/${j.id}'">
-    <div class="thumb"><span>${ico(j.nombre)}</span></div>
+  const img=CARATULAS[j.id];
+  const activo=j.estado==='activo';
+  const thumb=img
+    ? `<img class="thumbimg" src="${img}" alt="${j.nombre}" loading="lazy" onerror="this.outerHTML='<span style=font-size:44px>🎰</span>'">`
+    : `<span style="font-size:44px">${ico(j.nombre)}</span>`;
+  return `<div class="card ${activo?'':'pend'}" onclick="location.href='/jugar/${j.id}'">
+    <div class="thumb">${thumb}<span class="badge-demo">${activo?'ONLINE':'PRÓXIMO'}</span></div>
     <div class="meta"><b>${j.nombre}</b><span>${j.categoria}</span><br><span class="stat">▶ JUGAR</span></div>
   </div>`;
 }
 let DATA=[];
+let CARATULAS={};
 async function load(){
   try{const m=await(await fetch('/api/marca')).json();
     if(m.nombre){document.getElementById('marcaNombre').textContent=m.nombre;}
     if(m.lema){document.getElementById('marcaLema').textContent='· '+m.lema;}
     if(m.hero) document.getElementById('heroTitulo').textContent=m.hero;
   }catch(e){}
+  try{CARATULAS=await(await fetch('/caratulas.json')).json();}catch(e){}
   const r=await(await fetch('/api/catalogo')).json();
-  let extras=[];
-  try{const mj=await(await fetch('/api/masivo/estado')).json();
-    // del pool masivo, los validados activos y aun no en catalogo entran tambien
-    extras=(mj.detalle||[]).filter(j=>j.estado==='activo');
-  }catch(e){}
-  const enCat=new Set(r.map(j=>j.id));
-  DATA=[...r,...extras.filter(j=>!enCat.has(j.id))];
+  const rObs={}; r.forEach(j=>rObs[j.id]=j);
+  // pool completo: TODOS los juegos, activos primero
+  let pool=[];
+  try{
+    const mj=await(await fetch('/api/masivo/estado')).json();
+    pool=(mj.detalle||[]).map(j=>{
+      const base=rObs[j.id];
+      return {id:j.id,nombre:base?base.nombre:j.nombre,categoria:base?base.categoria:(j.categoria||'Slots'),estado:j.estado,href:'/jugar/'+j.id};
+    });
+  }catch(e){ pool=r.map(j=>({...j,estado:'activo'})); }
+  // orden: activos primero, luego pendientes
+  pool.sort((a,b)=>(a.estado==='activo'?0:1)-(b.estado==='activo'?0:1));
+  DATA=pool;
   pintar('');
 }
 function pintar(q){

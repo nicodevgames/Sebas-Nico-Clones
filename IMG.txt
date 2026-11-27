@@ -1,0 +1,3 @@
+]633;E;for u in 'https://common-static.pragmaticplay.net/game_pic/rec/310/vs20doghouse.png' 'https://common-static.pragmaticplay.net/game_pic/rec/230/vs20sweetbonanza.png' 'https://common-static.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/tile.png';68f76544-397c-4b7e-a7ce-50555a317b9c]633;C404 324 https://common-static.pragmaticplay.net/game_pic/rec/310/vs20doghouse.png
+404 328 https://common-static.pragmaticplay.net/game_pic/rec/230/vs20sweetbonanza.png
+404 356 https://common-static.pragmaticplay.net/gs2c/common/v3/games-html5/games/vs/vs20doghouse/desktop/tile.png

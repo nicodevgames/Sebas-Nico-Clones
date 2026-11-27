@@ -1,0 +1,2 @@
+-rw-r--r-- 1 root root 542 Nov 27 17:53 /root/Sebas-Nico-Clones/pragmatic-play-clone/engine/caratulas.json
+CARATULAS: 5 / 233
