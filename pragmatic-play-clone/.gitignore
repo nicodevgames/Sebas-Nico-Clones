@@ -1,0 +1,7 @@
+node_modules/
+*.log
+nohup.out
+.DS_Store
+# Archivos temporales de diagnostico
+*.tmp
+_CJ*.txt
