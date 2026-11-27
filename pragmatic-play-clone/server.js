@@ -52,19 +52,49 @@ const GOOG = '<script>window.goog=window.goog||{provide:function(){},require:fun
   'window.Wrapper={domElement:document.createElement("div"),onLoad:function(){},addChild:function(){},removeChild:function(){},visible:true,alpha:1};' +
   'window.SystemMessageManager={Wrapper:window.Wrapper,OnLoad:function(){},getInstance:function(){return this}};</script>';
 
+// Cache de sesiones por juego: evita martillar openGame.do (nos rate-limita
+// con una pagina de error 200 sin Location). Cada destino vive ~8 minutos.
+const cacheSesiones = {}; // juego -> { destino, ts }
+
+const HOSTS = [
+  'https://demogamesfree.pragmaticplay.net',
+  'https://demogamesfree-asia.pragmaticplay.net'
+];
+
+async function obtenerDestino(juego, req) {
+  const c = cacheSesiones[juego];
+  if (c && Date.now() - c.ts < 480000) return c.destino;
+  let ultimoError = null;
+  // Backoff creciente: 1s, 4s, 8s. Alterna hosts.
+  const esperas = [1000, 4000, 8000];
+  for (let i = 0; i < 3; i++) {
+    const host = HOSTS[i % HOSTS.length];
+    try {
+      const r = await fetch(host + '/gs2c/openGame.do?gameSymbol=' + juego + '&jurisdiction=99&lang=en', { headers: cabeceras(req), redirect: 'manual' });
+      guardarCookies(r);
+      const destino = r.headers.get('location');
+      if (destino) {
+        cacheSesiones[juego] = { destino, ts: Date.now() };
+        return destino;
+      }
+      const cuerpo = await r.text();
+      ultimoError = new Error(cuerpo.includes('error has occurred') ? 'demo limitado temporalmente' : 'openGame HTTP ' + r.status);
+    } catch (e) { ultimoError = e; }
+    await new Promise(ok => setTimeout(ok, esperas[i]));
+  }
+  if (c) return c.destino;
+  throw ultimoError || new Error('openGame agoto reintentos');
+}
+
 app.get('/', async (req, res) => {
-  const juego = String(req.query.juego || 'vs20doghouse').replace(/[^a-z0-9]/gi, '');
+  const juego = String(req.query.juego || 'vs20doghouse').replace(/[^a-z0-9-]/gi, '');
   const modo = String(req.query.modo || 'embed');
   try {
-    const r = await fetch(DEMO + '/gs2c/openGame.do?gameSymbol=' + juego + '&jurisdiction=99&lang=en', { headers: cabeceras(req), redirect: 'manual' });
-    guardarCookies(r);
-    const destino = r.headers.get('location');
-    if (!destino) throw new Error('sin redireccion de openGame');
-    // Recordar la sesion para las llamadas de estadisticas/protocolo via proxy
+    const destino = await obtenerDestino(juego, req);
     const mMgc = /mgckey=([^&]+)/.exec(destino);
     if (mMgc) {
       sesion = { mgckey: decodeURIComponent(mMgc[1]), ts: Date.now() };
-      console.log('   sesion (pagina) recordada', sesion.mgckey.slice(0, 24));
+      console.log('   sesion (' + juego + ')', sesion.mgckey.slice(0, 24));
     }
 
     if (modo === 'embed') {
@@ -94,7 +124,14 @@ app.get('/', async (req, res) => {
     html = html.replace(/<head[^>]*>/i, (x) => x + ADAPTADOR.replace('__CONFIG__', JSON.stringify(mc ? mc[1] : '{}')));
     res.type('html').send(html);
   } catch (e) {
-    res.status(502).type('text').send('No se pudo abrir el demo: ' + e.message);
+    // Pagina auto-refrescante: reintentara hasta conseguir sesion, sin 502 feo.
+    res.type('html').send(
+      '<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="10">' +
+      '<style>body{background:#000;color:#f80;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center}</style></head>' +
+      '<body><div><img alt="" style="opacity:.9" width="280" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyODAiIGhlaWdodD0iODAiPjx0ZXh0IHg9IjEwIiB5PSI1MCIgZmlsbD0iI2Y4MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjMyIj5QUkFHTUFUSUMgUExBWTwvdGV4dD48L3N2Zz4=">' +
+      '<p>Abriendo <b>' + juego + '</b>… el demo está ocupado.</p>' +
+      '<p>Reintentando automáticamente en <b>10 s</b>… (' + String(e.message || e) + ')</p></div></body></html>'
+    );
   }
 });
 
@@ -174,5 +211,5 @@ async function enviarRespuesta(r, res) {
   res.send(cuerpo);
 }
 
-const PUERTO = process.env.PORT || 3000;
+const PUERTO = process.env.PORT || 3100;
 app.listen(PUERTO, () => console.log('Proxy Dog House en http://localhost:' + PUERTO + JUEGO));
