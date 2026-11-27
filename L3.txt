@@ -1,0 +1,3 @@
+catalogo=200
+jugar=200
+0

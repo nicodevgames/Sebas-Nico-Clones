@@ -1,0 +1,3 @@
+jugar=000
+catalogo=000
+grep: /root/Sebas-Nico-Clones/JG.html: No such file or directory

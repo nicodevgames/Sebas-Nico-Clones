@@ -58,6 +58,7 @@ const GOOG = '<script>window.goog=window.goog||{provide:function(){},require:fun
 // Cache de sesiones por juego: evita martillar openGame.do (nos rate-limita
 // con una pagina de error 200 sin Location). Cada destino vive ~8 minutos.
 const cacheSesiones = {}; // juego -> { destino, ts }
+const cooldownHasta = {}; // juego -> ts hasta el cual NO reintentar upstream
 
 const HOSTS = [
   'https://demogamesfree.pragmaticplay.net',
@@ -67,6 +68,9 @@ const HOSTS = [
 async function obtenerDestino(juego, req) {
   const c = cacheSesiones[juego];
   if (c && Date.now() - c.ts < 480000) return c.destino;
+  if (cooldownHasta[juego] && Date.now() < cooldownHasta[juego]) {
+    throw new Error('demo en enfriamiento (' + Math.ceil((cooldownHasta[juego] - Date.now()) / 1000) + 's)');
+  }
   let ultimoError = null;
   // Backoff creciente: 1s, 4s, 8s. Alterna hosts.
   const esperas = [1000, 4000, 8000];
@@ -86,6 +90,7 @@ async function obtenerDestino(juego, req) {
     await new Promise(ok => setTimeout(ok, esperas[i]));
   }
   if (c) return c.destino;
+  cooldownHasta[juego] = Date.now() + 90000; // 90s de enfriamiento por juego
   throw ultimoError || new Error('openGame agoto reintentos');
 }
 
@@ -125,7 +130,7 @@ app.post('/api/:juego/spin', (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.get('/', (req, res) => res.sendFile(JUGADOR_HTML));
+app.get('/jugador', (req, res) => res.sendFile(JUGADOR_HTML));
 
 // ══════════ CLONADOR UNIVERSAL (plantilla de juegos) ══════════
 // POST /api/clonar  { id, tema?, nombre?, fixture? }
@@ -165,6 +170,62 @@ app.post('/api/harvest', async (req, res) => {
 
 // espejo de assets descargados (offline)
 app.use('/mirror', express.static(harvest.DIR_MIRROR, { maxAge: '7d' }));
+
+// ══════════ LOBBY + JUEGOS ORIGINALES (cliente real de Pragmatic) ══════════
+const CATALOGO = [
+  { id: 'vs20doghouse', nombre: 'The Dog House', categoria: 'Populares' },
+  { id: 'vs20doghousemegaways', nombre: 'The Dog House Megaways', categoria: 'Populares' },
+  { id: 'vs20sweetbonanza', nombre: 'Sweet Bonanza', categoria: 'Populares' },
+  { id: 'vs20gatesofolympus', nombre: 'Gates of Olympus', categoria: 'Populares' },
+  { id: 'vs20sugarrush', nombre: 'Sugar Rush', categoria: 'Populares' },
+  { id: 'vs20starlightprincess', nombre: 'Starlight Princess', categoria: 'Populares' },
+  { id: 'vs20bigbassbonanza', nombre: 'Big Bass Bonanza', categoria: 'Pesca' },
+  { id: 'vs20biggerbassbonanza', nombre: 'Bigger Bass Bonanza', categoria: 'Pesca' },
+  { id: 'vs20bigbasssplash', nombre: 'Big Bass Splash', categoria: 'Pesca' },
+  { id: 'vs20fruitparty', nombre: 'Fruit Party', categoria: 'Frutales' },
+  { id: 'vs20fruitparty2', nombre: 'Fruit Party 2', categoria: 'Frutales' },
+  { id: 'vs20wolfgold', nombre: 'Wolf Gold', categoria: 'Clasicos' },
+  { id: 'vs20firestrike', nombre: 'Fire Strike', categoria: 'Clasicos' },
+  { id: 'vs20releasethekraken', nombre: 'Release the Kraken', categoria: 'Aventura' },
+  { id: 'vs20greatrhinomegaways', nombre: 'Great Rhino Megaways', categoria: 'Aventura' },
+  { id: 'vs20wildwestgold', nombre: 'Wild West Gold', categoria: 'Aventura' },
+  { id: 'vs20aztecgems', nombre: 'Aztec Gems', categoria: 'Clasicos' },
+  { id: 'vs20hotfiesta', nombre: 'Hot Fiesta', categoria: 'Fiesta' }
+];
+
+app.get('/api/catalogo', (req, res) => {
+  res.json(CATALOGO.map(j => ({
+    ...j, href: '/jugar/' + j.id,
+    plantillaExiste: !!motor.cargarJuego(j.id)
+  })));
+});
+
+app.get('/lobby', (req, res) => res.sendFile(path.join(__dirname, 'public', 'lobby.html')));
+
+// /jugar/:id →Embed del CLIENTE REAL del demo (el mismo juego, misma fisica)
+app.get('/jugar/:juego', async (req, res) => {
+  const juego = String(req.params.juego || 'vs20doghouse').replace(/[^a-z0-9-]/gi, '');
+  try {
+    const destino = await obtenerDestino(juego, req);
+    const mMgc = /mgckey=([^&]+)/.exec(destino);
+    if (mMgc) { sesion = { mgckey: decodeURIComponent(mMgc[1]), ts: Date.now() }; }
+    res.type('html').send(
+      '<!doctype html><html><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>' + juego + '</title>' +
+      '<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}iframe{display:block;width:100%;height:100%;border:0}</style></head><body>' +
+      '<iframe src="' + destino + '" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>' +
+      '</body></html>');
+  } catch (e) {
+    res.status(200).type('html').send('<meta http-equiv="refresh" content="8"><body style="background:#000;color:#f6a91d;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh">Abriendo ' + juego + '… reintentando</body>');
+  }
+});
+
+// Jugador propio (motor local) en /propio
+app.get('/propio', (req, res) => res.sendFile(path.join(__dirname, 'public', 'jugador.html')));
+app.get('/propio/:juego', (req, res) => res.sendFile(path.join(__dirname, 'public', 'jugador.html')));
+// Root = LOBBY
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'lobby.html')));
 
 // ══════════ MODO REFERENCIA DEMO (opcional, ?origen=demo) ══════════
 app.get('/demo', async (req, res) => {
