@@ -7,7 +7,6 @@ const path = require('path');
 
 const DIR_GAMES = path.join(__dirname, '..', 'games');
 const cacheGames = new Map();
-const cuentas = new Map();
 
 function listarJuegos() {
   if (!fs.existsSync(DIR_GAMES)) return [];
@@ -81,10 +80,10 @@ function evaluar(g, grid, coin) {
   return { premios: premios, scatters: sc, scatterMonto: scatterMonto };
 }
 
-function cuenta(id) {
-  if (!cuentas.has(id)) cuentas.set(id, { saldo: 100000, apuesta: 0 });
-  return cuentas.get(id);
-}
+/* cuentas en storage persistente (data/cuentas.json) */
+const storage = require('./storage');
+
+function cuenta(id) { return storage.usuario(id); }
 
 function jugar(cuentaId, gameId, coin) {
   const g = cargarJuego(gameId);
@@ -95,10 +94,10 @@ function jugar(cuentaId, gameId, coin) {
   const grid = girarGrid(g, 0);
   const res = evaluar(g, grid, coin);
   const totalPremio = res.premios.reduce((a, p) => a + p.monto, 0) + res.scatterMonto;
-  cta.saldo = +(cta.saldo - apuesta + totalPremio).toFixed(2);
-  cta.apuesta = apuesta;
+  storage.aplicar(cuentaId, totalPremio - apuesta, { apuesta, premio: totalPremio });
+  const c2 = cuenta(cuentaId);
   return { grid: grid, premios: res.premios, scatters: res.scatters, scatterMonto: res.scatterMonto,
-    totalPremio: +totalPremio.toFixed(2), apuesta: apuesta, saldo: cta.saldo, moneda: 'USD' };
+    totalPremio: +totalPremio.toFixed(2), apuesta: apuesta, saldo: c2.saldo, moneda: 'USD' };
 }
 
 module.exports = { listarJuegos, cargarJuego, girarGrid, evaluar, jugar, cuenta };

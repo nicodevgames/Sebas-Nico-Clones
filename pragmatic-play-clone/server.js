@@ -123,12 +123,33 @@ app.get('/api/:juego/init', (req, res) => {
 app.post('/api/:juego/spin', (req, res) => {
   const datos = leerJson(req);
   const coin = Number(datos.coin) || 0.1;
+  const usuario = String(datos.usuario || req.headers['x-usuario'] || 'invitado').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 24) || 'invitado';
   try {
-    const r = motor.jugar(CUENTA_LOCAL, req.params.juego, coin);
+    const r = motor.jugar(usuario, req.params.juego, coin);
     if (!r.error) r.mejorMult = r.premios.length ? Math.max.apply(null, r.premios.map(p => p.mult || 1)) : 1;
     res.json(r);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
+
+// Marca blanca editable sin tocar codigo (data/marca.json)
+const storage = require('./engine/storage');
+app.get('/api/marca', (req, res) => {
+  res.json(storage.leer('marca', {
+    nombre: 'PP SLOTS', lema: 'PLATAFORMA PROPIA',
+    colorAcento: '#f6a91d', pie: 'POWERED BY PP SLOTS ENGINE'
+  }));
+});
+app.post('/api/marca', (req, res) => {
+  const d = leerJson(req);
+  if (!d || typeof d !== 'object') return res.status(400).json({ error: 'payload invalido' });
+  const actual = storage.leer('marca', {});
+  const nueva = Object.assign(actual, d);
+  storage.guardar('marca', nueva);
+  res.json({ ok: true, marca: nueva });
+});
+
+// Panel de cuentas (operador)
+app.get('/api/cuentas', (req, res) => res.json(storage.todos()));
 
 app.get('/jugador', (req, res) => res.sendFile(JUGADOR_HTML));
 
