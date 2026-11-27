@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>PP Slots — Plataforma Propia</title>
+<style>
+:root{--panel:#171a21;--oro:#ffb020;--verde:#2ecc71}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(ellipse at 50% -20%,#3b2412 0%,#120b06 70%);color:#fff;font-family:'Segoe UI',system-ui,sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column;user-select:none}
+header{text-align:center;padding:6px;font-weight:700;letter-spacing:2px;color:var(--oro);font-size:clamp(14px,3vw,22px);text-shadow:0 2px 6px #000}
+header small{display:block;font-size:10px;letter-spacing:4px;color:#c9a06a}
+#marco{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
+#slot{background:linear-gradient(#4a2c15,#2b1808);border:6px solid #6b3f1d;border-radius:16px;padding:10px;box-shadow:0 12px 40px #000, inset 0 0 30px #0008}
+#grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.celda{width:clamp(52px,13vw,96px);height:clamp(52px,13vw,96px);background:#1c1207;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:clamp(26px,7vw,48px);transition:transform .12s}
+.celda.win{background:#33260a;outline:2px solid var(--oro);animation:pulse .5s infinite alternate;transform:scale(1.06)}
+.celda.scroll{transform:translateY(-8px)}
+@keyframes pulse{to{box-shadow:0 0 18px var(--oro)}}
+#barra{display:flex;gap:12px;align-items:center;justify-content:center;padding:10px;background:#0d0a07;border-top:2px solid #3a2410;flex-wrap:wrap}
+.caja{background:#1d1508;border:1px solid #4a3010;border-radius:10px;padding:6px 14px;text-align:center;min-width:110px}
+.caja b{color:var(--oro);font-size:18px;display:block}
+.caja span{font-size:10px;color:#a88;letter-spacing:1px}
+button{cursor:pointer;border:0;border-radius:10px;font-weight:700}
+.bmas{background:#2a5c33;color:#dff7e3;width:44px;height:44px;font-size:22px}
+.bmenos{background:#5c2a2a;color:#f7dfdf;width:44px;height:44px;font-size:22px}
+#girar{background:linear-gradient(#ffc94a,#e8960f);color:#3a2400;width:min(30vw,120px);height:min(30vw,120px);border-radius:50%;font-size:clamp(13px,3vw,18px);box-shadow:0 6px 0 #96590a,0 10px 24px #000;transition:transform .08s}
+#girar:active{transform:translateY(4px);box-shadow:0 2px 0 #96590a}
+#girar:disabled{filter:grayscale(.6);cursor:wait}
+#mensaje{position:absolute;left:50%;top:12%;transform:translateX(-50%);background:#000c;padding:8px 22px;border-radius:24px;border:2px solid var(--oro);color:var(--oro);font-size:clamp(14px,3vw,20px);font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+#mensaje.ver{opacity:1}
+footer{text-align:center;font-size:10px;color:#7a6540;padding:4px}
+</style></head><body>
+<header>PP SLOTS<small>PLATAFORMA 100% PROPIA</small></header>
+<div id="marco"><div id="slot"><div id="grid"></div></div><div id="mensaje"></div></div>
+<div id="barra">
+  <div class="caja"><span>SALDO</span><b id="saldo">—</b></div>
+  <button class="bmenos" onclick="cambiarCoin(-1)">−</button>
+  <div class="caja"><span>APOSTA</span><b id="apuesta">—</b></div>
+  <button class="bmas" onclick="cambiarCoin(1)">+</button>
+  <button id="girar" onclick="girar()">GIRAR</button>
+</div>
+<footer>MOTOR MATEMATICO PROPIO · RNG LOCAL · SIN TERCEROS</footer>
+<script>
+const J = new URLSearchParams(location.search).get('juego') || 'vs20doghouse';
+const grid = document.getElementById('grid');
+let cfg=null, saldo=0, iCoin=3, girando=false;
+const fmt=n=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+async function init(){
+  const r=await (await fetch('/api/'+J+'/init')).json();
+  cfg=r; saldo=r.saldo;
+  grid.innerHTML='';
+  for(let c=0;c<cfg.reels;c++)for(let f=0;f<cfg.rows;f++){
+    const d=document.createElement('div');d.className='celda';d.id='c'+c+'_'+f;
+    d.textContent=cfg.simbolos[c][f].glifo;d.style.background='#1c1207';
+    grid.appendChild(d);
+  }
+  pintar();
+}
+function pinta(sim){const s=cfg.catalogo[sim];return s?s.glifo:'?'}
+function color(sim){const s=cfg.catalogo[sim];return s?s.color:'#fff'}
+function pintar(gridData,wins){
+  for(let c=0;c<cfg.reels;c++)for(let f=0;f<cfg.rows;f++){
+    const el=document.getElementById('c'+c+'_'+f);
+    const sim=gridData?gridData[c][f]:cfg.simbolos[c][f].id;
+    el.textContent=pinta(sim);el.classList.remove('win');
+    el.style.color=color(sim);
+  }
+  if(wins)wins.forEach(p=>{const li=cfg.lineas[p.linea-1];for(let c=0;c<p.cols;c++){const el=document.getElementById('c'+c+'_'+li[c]);el.classList.add('win')}});
+}
+function pintarSimple(){for(let c=0;c<cfg.reels;c++)for(let f=0;f<cfg.rows;f++){const el=document.getElementById('c'+c+'_'+f);const sim=cfg.simbolos[c][f].id;el.textContent=pinta(sim);el.style.color=color(sim);el.classList.remove('win')}}
+function msg(t,ms){const m=document.getElementById('mensaje');m.textContent=t;m.classList.add('ver');if(ms)setTimeout(()=>m.classList.remove('ver'),ms)}
+function pintarBarra(){document.getElementById('saldo').textContent=fmt(saldo);document.getElementById('apuesta').textContent=fmt(cfg.lineas_count*cfg.monedas[iCoin])}
+function cambiarCoin(d){if(girando)return;iCoin=Math.max(0,Math.min(cfg.monedas.length-1,iCoin+d));pintarBarra()}
+
+async function girar(){
+  if(girando)return;girando=true;document.getElementById('girar').disabled=true;
+  // animacion de scroll
+  let ticks=0;const anim=setInterval(()=>{for(let c=0;c<cfg.reels;c++)for(let f=0;f<cfg.rows;f++){const el=document.getElementById('c'+c+'_'+f);el.classList.toggle('scroll',(ticks+c)%3===0)}ticks++},80);
+  try{
+    const r=await (await fetch('/api/'+J+'/spin',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({coin:cfg.monedas[iCoin]})})).json();
+    clearInterval(anim);
+    if(r.error){msg(r.error.toUpperCase(),2000);return}
+    // revelar columna por columna
+    pintar([]);
+    for(let c=0;c<r.grid.length;c++)for(let f=0;f<cfg.rows;f++){const el=document.getElementById('c'+c+'_'+f);setTimeout(()=>{el.textContent=pinta(r.grid[c][f]);el.style.color=color(r.grid[c][f])},c*120+f*30)}
+    await new Promise(ok=>setTimeout(ok,r.grid.length*120+240));
+    saldo=r.saldo;pintarBarra();
+    if(r.totalPremio>0){pintar(r.grid,r.premios);msg('GANASTE '+fmt(r.totalPremio)+(r.mejorMult>1?' (x'+r.mejorMult+')':''),2600)}
+    else{pintar(r.grid);msg('SIN PREMIO — SUERTE LA PROXIMA',1200)}
+  }catch(e){clearInterval(anim);msg('ERROR DE RED',1800)}
+  finally{girando=false;document.getElementById('girar').disabled=false}
+}
+init();pintarBarra();
+</script></body></html>

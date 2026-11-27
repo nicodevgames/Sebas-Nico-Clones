@@ -3,6 +3,7 @@
 // sus URLs absolutas a relativas, así el navegador habla solo con este servidor.
 const express = require('express');
 const path = require('path');
+const motor = require('./engine/motor');
 
 const DEMO = 'https://demogamesfree.pragmaticplay.net';
 const JUEGO = '/gs2c/common/v3/games-html5/games/vs/vs20doghouse/';
@@ -86,7 +87,46 @@ async function obtenerDestino(juego, req) {
   throw ultimoError || new Error('openGame agoto reintentos');
 }
 
-app.get('/', async (req, res) => {
+// ══════════ PLATAFORMA PROPIA (motor + matematica local) ══════════
+const JUGADOR_HTML = path.join(__dirname, 'public', 'jugador.html');
+const CUENTA_LOCAL = 'jugador1';
+
+function leerJson(req) {
+  if (Buffer.isBuffer(req.body)) { try { return JSON.parse(req.body.toString('utf8')); } catch (e) { return {}; } }
+  if (req.body && typeof req.body === 'object') return req.body;
+  return {};
+}
+
+app.get('/api/games', (req, res) => res.json({ juegos: motor.listarJuegos() }));
+
+app.get('/api/:juego/init', (req, res) => {
+  const g = motor.cargarJuego(req.params.juego);
+  if (!g) return res.status(404).json({ error: 'juego inexistente' });
+  const cta = motor.cuenta(CUENTA_LOCAL);
+  const muestra = motor.girarGrid(g, 0); // grid[col][fila]
+  const vista = muestra.map(col => col.map(id => ({ id, glifo: (g.simbolos[id] || {}).glifo || '?' })));
+  res.json({
+    juego: g.id, nombre: g.nombre, reels: g.reels, rows: g.rows,
+    lineas: g.lineas, lineas_count: g.lineas.length,
+    monedas: g.monedas, catalogo: g.simbolos,
+    simbolos: vista, saldo: cta.saldo
+  });
+});
+
+app.post('/api/:juego/spin', (req, res) => {
+  const datos = leerJson(req);
+  const coin = Number(datos.coin) || 0.1;
+  try {
+    const r = motor.jugar(CUENTA_LOCAL, req.params.juego, coin);
+    if (!r.error) r.mejorMult = r.premios.length ? Math.max.apply(null, r.premios.map(p => p.mult || 1)) : 1;
+    res.json(r);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/', (req, res) => res.sendFile(JUGADOR_HTML));
+
+// ══════════ MODO REFERENCIA DEMO (opcional, ?origen=demo) ══════════
+app.get('/demo', async (req, res) => {
   const juego = String(req.query.juego || 'vs20doghouse').replace(/[^a-z0-9-]/gi, '');
   const modo = String(req.query.modo || 'embed');
   try {

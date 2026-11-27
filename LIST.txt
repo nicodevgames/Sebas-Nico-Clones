@@ -1,0 +1,3 @@
+/root/Sebas-Nico-Clones/pragmatic-play-clone/RTP.txt
+/root/Sebas-Nico-Clones/pragmatic-play-clone/TUNE.txt
+/root/Sebas-Nico-Clones/pragmatic-play-clone/RTP2.txt

@@ -1,0 +1,5 @@
+ls: cannot access '/root/Sebas-Nico-Clones/pragmatic-play-clone/T.txt': No such file or directory
+-rw-r--r-- 1 root root 170 Nov 27 01:46 /root/Sebas-Nico-Clones/S.json
+-rw-r--r-- 1 root root 327 Nov 27 01:46 /root/Sebas-Nico-Clones/T.txt
+/root/Sebas-Nico-Clones/S.json
+/root/Sebas-Nico-Clones/T.txt
