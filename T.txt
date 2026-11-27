@@ -1,5 +1,0 @@
-LISTEN 0      511                                         *:3100             *:*    users:(("node",pid=2192311,fd=18))          
-games=200
-init=200
-spin=200
-{"grid":[[10,13,6],[8,13,7],[5,11,3],[2,6,10],[6,13,9]],"premios":[],"scatters":0,"scatterMonto":0,"totalPremio":0,"apuesta":4,"saldo":99996,"moneda":"USD","mejorMult":1}

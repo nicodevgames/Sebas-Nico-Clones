@@ -1,3 +1,0 @@
-head: cannot open '/root/Sebas-Nico-Clones/pragmatic-play-clone/RTP3.txt' for reading: No such file or directory
-raiz(jugador)=200
-1
