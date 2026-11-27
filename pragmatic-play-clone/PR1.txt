@@ -1,0 +1,10 @@
+CREADO: /root/Sebas-Nico-Clones/pragmatic-play-clone/games/dulces-frutas/game.json tema frutas
+CREADO: /root/Sebas-Nico-Clones/pragmatic-play-clone/games/tesoro-egipcio/game.json tema egipcio
+IMPORTADO: /root/Sebas-Nico-Clones/pragmatic-play-clone/games/clon-doghouse-exacto/game.json
+Simbolos: 3,4,9,10
+Paytable L5: {"3":1200,"4":800,"9":480,"10":320}
+---
+clon-doghouse-exacto
+dulces-frutas
+tesoro-egipcio
+vs20doghouse

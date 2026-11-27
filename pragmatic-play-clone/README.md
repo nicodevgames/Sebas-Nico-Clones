@@ -27,20 +27,47 @@ npm start                      # http://localhost:3100
 
 ## 🧩 Plantilla: agregar un juego nuevo (sin programar)
 
-Crear carpeta y JSON — la plataforma lo detecta solo:
+**Opción A — desde la API (clonador universal):**
+```bash
+# Juego nuevo de plantilla tematica (temas: clasico frutas egipcio mar dorado perros)
+curl -X POST -H 'content-type: application/json' \
+  -d '{"id":"piratas-del-oro","tema":"dorado","nombre":"Piratas del Oro"}' \
+  http://localhost:3100/api/clonar
 
+# Clonar desde fixture gs2c real (importa paytable exacta del doInit)
+curl -X POST -H 'content-type: application/json' \
+  -d "{\"id\":\"clon-doghouse-exacto\",\"fixture\":\"$(cat respuestas/vs20doghouse.init.txt)\"}" \
+  http://localhost:3100/api/clonar
 ```
-games/<mi-juego>/
-└── game.json
+
+**Opción B — desde CLI:**
+```bash
+node engine/generador.js base mi-juego dorado 'Mi Juego'
+node engine/generador.js fixture respuestas/vs20doghouse.init.txt clon-doghouse-exacto
 ```
 
-Campos de `game.json`: `reels`, `rows`, `lineas` (matriz filas por reel),
-`simbolos` (id→nombre/glifo/color), `paytable` (`{coincidencias:{simbolo:pago}}`),
-`reel_sets` (tiras ponderadas `[simbolo,peso]` por columna), `wild` +
-`wild_mult` (x2/x3) + rango de columnas, `scatter` + `scatter_paga`, `monedas`.
+**Opción C — a mano:** crear `games/<mi-juego>/game.json` (detectado al vuelo).
 
-Fuentes de matemática: copiar estructura desde un fixture (`respuestas/`),
-diseñar la tuya, o extraer de cualquier slot clásico.
+Campos de `game.json`: `reels`, `rows`, `lineas`, `simbolos`, `paytable`
+(`{coincidencias:{simbolo:pago}}`), `reel_sets` (tiras ponderadas
+`[simbolo,peso]` por columna), `wild` + `wild_mult` + rango de columnas,
+`scatter` + `scatter_paga`, `monedas`.
+
+## 🏭 Estado de la plantilla clonadora
+
+| Pieza | Archivo | Funcion |
+|-------|---------|---------|
+| Motor matematico | `engine/motor.js` | RNG, lineas, wild x2/x3, scatter, cuentas |
+| Generador universal | `engine/generador.js` | `base()` plantilla tematica + `desdeFixture()` importa paytable gs2c real |
+| Calibrador RTP | `engine/test/tuner.js` | Ajusta paytable automatica al RTP objetivo |
+| Medidor RTP | `engine/test/rtp.js` | Simulacion masiva con estadisticas |
+| Jugador visual | `public/jugador.html` | Splash logo + marco madera + HUD original |
+| APIs | `server.js` | init/spin/clonar/games |
+
+Juegos de ejemplo incluidos generados con la plantilla:
+`vs20doghouse` (original calibrado), `dulces-frutas`, `tesoro-egipcio`,
+`piratas-del-oro`, `clon-doghouse-exacto` (importado del fixture real con
+paytable 150/450/1200 exacta).
 
 ## ⚙️ Motor y calibración
 

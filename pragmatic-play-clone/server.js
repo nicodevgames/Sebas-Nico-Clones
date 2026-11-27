@@ -4,6 +4,7 @@
 const express = require('express');
 const path = require('path');
 const motor = require('./engine/motor');
+const generador = require('./engine/generador');
 
 const DEMO = 'https://demogamesfree.pragmaticplay.net';
 const JUEGO = '/gs2c/common/v3/games-html5/games/vs/vs20doghouse/';
@@ -124,6 +125,23 @@ app.post('/api/:juego/spin', (req, res) => {
 });
 
 app.get('/', (req, res) => res.sendFile(JUGADOR_HTML));
+
+// ══════════ CLONADOR UNIVERSAL (plantilla de juegos) ══════════
+// POST /api/clonar  { id, tema?, nombre?, fixture? }
+//   con fixture (texto doInit gs2c) => importa matematica real
+//   sin fixture => genera juego nuevo de plantilla tematica
+app.post('/api/clonar', (req, res) => {
+  const d = leerJson(req);
+  const id = String(d.id || '').replace(/[^a-z0-9-]/gi, '');
+  if (!id) return res.status(400).json({ error: 'falta id' });
+  try {
+    const opt = { nombre: d.nombre, tema: d.tema, glifoWild: d.glifoWild, glifoScatter: d.glifoScatter };
+    const r = d.fixture
+      ? generador.desdeFixture(String(d.fixture), id, opt)
+      : generador.base(id, opt);
+    res.json({ ok: true, juego: id, ruta: r.ruta, simbolos: r.juego.simbolos_ids });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
 
 // ══════════ MODO REFERENCIA DEMO (opcional, ?origen=demo) ══════════
 app.get('/demo', async (req, res) => {
