@@ -1,0 +1,42 @@
+  r.post(
+    '/admin/providers',
+    ...platform,
+    asyncHandler(async (req, res) => sendJson(res, await ctx.catalog.upsertProvider(parse(providerBody, req.body)), 201)),
+  );
+  r.patch(
+    '/admin/providers/:id',
+    ...platform,
+    asyncHandler(async (req, res) =>
+      sendJson(res, await ctx.catalog.patchProvider(String(req.params.id), parse(providerBody.omit({ id: true }).partial(), req.body))),
+    ),
+  );
+  r.delete(
+    '/admin/providers/:id',
+    ...platform,
+    asyncHandler(async (req, res) => {
+      if (!(await ctx.catalog.deleteProvider(String(req.params.id)))) throw hubError('UNKNOWN_PROVIDER', 'Proveedor no encontrado');
+      res.status(204).end();
+    }),
+  );
+  r.post(
+    '/admin/providers/:id/sync',
+    ...platform,
+    asyncHandler(async (req, res) => {
+      const id = String(req.params.id);
+      const adapter = ctx.adapters.get(id);
+      if (!adapter) throw hubError('UNKNOWN_PROVIDER', 'Proveedor sin adaptador activo (revisa sus variables de entorno)');
+      const dtos = await adapter.syncCatalog();
+      sendJson(res, await ctx.catalog.syncProvider(id, dtos));
+    }),
+  );
+
+  r.get(
+    '/admin/games',
+    ...staff,
+    asyncHandler(async (req, res) => {
+      const q = parse(gamesQuery, req.query);
+      sendJson(res, await ctx.catalog.listGames({ ...q, category: q.category as never, includeDisabled: true }));
+    }),
+  );
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/dev-server.ts:5: *   npm run dev:modules          # http://localhost:4000 (PORT para cambiarlo)
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/dev-server.ts:7: * Tokens de desarrollo: Bearer dev:<ROLE>:<operatorId>:<id>, p. ej. dev:PLAYER:op-demo:player-demo.

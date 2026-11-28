@@ -1,0 +1,2 @@
+{"ok":true,"activo":true,"url":"https://api.infinite-abyss.com/hub/v1","providerId":"pragmatic-play"}
+{"activo":true,"url":"https://api.infinite-abyss.com/hub/v1","providerId":"pragmatic-play"}

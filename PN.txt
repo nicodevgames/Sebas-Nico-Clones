@@ -1,0 +1,6 @@
+root=000
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v20.20.2

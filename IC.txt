@@ -1,0 +1,16 @@
+README.md
+apps
+docker-compose.test.yml
+docker-compose.yml
+docs
+infra
+package.json
+api
+backoffice
+web
+all-in-one.md
+architecture.md
+contracts.md
+integration.md
+modules.md
+paridad.md

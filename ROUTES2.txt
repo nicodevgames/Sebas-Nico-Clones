@@ -1,0 +1,3 @@
+]633;E;for h in 'api.infinite-abyss.com/hub/v1/providers' 'infinite-abyss.com/api/hub/v1/providers' 'infinite-abyss.com/_svc/api/hub';472a4765-f222-49cd-8932-cd8669d20b51]633;Capi.infinite-abyss.com/hub/v1/providers -> 200
+infinite-abyss.com/api/hub/v1/providers -> 404
+infinite-abyss.com/_svc/api/hub -> 404

@@ -1,0 +1,57 @@
+import { verifyHmac } from '../../../shared/crypto/hmac';
+import type { DemoContext, LaunchContext, ProviderAdapter, SignedRequest } from '../../domain/ProviderAdapter';
+import { envKey, GameDTO } from '../../domain/types';
+import type { WalletAction, WalletErrorResponse, WalletOkResponse, WinRequest } from '../../domain/walletProtocol';
+
+/** Lee el secreto HMAC de un proveedor: HUB_PROVIDER_<ID>_SECRET. */
+export const providerSecret = (env: NodeJS.ProcessEnv, providerId: string): string | undefined =>
+  env[`HUB_PROVIDER_${envKey(providerId)}_SECRET`] || undefined;
+
+const header = (h: SignedRequest['headers'], name: string): string | undefined => {
+  const v = h[name.toLowerCase()];
+  return Array.isArray(v) ? v[0] : v;
+};
+
+/**
+ * Adaptador base para proveedores que hablan el protocolo seamless estándar de Infinite Abyss
+ * (X-Signature = HMAC-SHA256 hex del raw body). Los proveedores con protocolo propio
+ * sobrescriben mapRequest/mapResponse/mapError/verifySignature.
+ */
+export abstract class StandardProviderAdapter implements ProviderAdapter {
+  abstract readonly id: string;
+
+  constructor(protected readonly secret: string | undefined) {}
+
+  get enabled(): boolean {
+    return Boolean(this.secret);
+  }
+
+  abstract launchGame(ctx: LaunchContext): Promise<{ url: string }>;
+  abstract launchDemo(ctx: DemoContext): Promise<{ url: string }>;
+  abstract syncCatalog(): Promise<GameDTO[]>;
+
+  verifySignature(req: SignedRequest): boolean {
+    if (!this.secret) return false;
+    return verifyHmac(this.secret, req.rawBody, header(req.headers, 'x-signature'));
+  }
+
+  mapRequest(_action: WalletAction, body: unknown): unknown {
+    return body;
+  }
+
+  mapResponse(_action: WalletAction, res: WalletOkResponse): unknown {
+    return res;
+  }
+
+  mapError(_action: WalletAction, err: WalletErrorResponse): { status: number; body: unknown } {
+    return { status: err.status, body: { status: 'ERROR', error: { code: err.code, message: err.message } } };
+  }
+
+  allowsWinWithoutBet(_req: WinRequest): boolean {
+    return false;
+  }
+}
+66:      if (!known.has(a.id)) await catalog.upsertProvider({ id: a.id, name: a.name, type: 'aggregator', config: {} });
+69:  await ensureAggregators(adapters.aggregators);
+80:        await ensureAggregators(built.aggregators);
+92:          a.syncCatalog(),

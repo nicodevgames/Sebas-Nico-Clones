@@ -1,0 +1,5 @@
+1:import { AuthPort, Principal, ROLES, Role } from '../ports/AuthPort';
+6: * - PLATFORM_ADMIN: operatorId puede ir vacío o '*' (ve todo).
+7: * Ejemplos: `dev:PLAYER:op-1:p-1`, `dev:OPERATOR_ADMIN:op-1:u-9`, `dev:PLATFORM_ADMIN:*:root`.
+18:    if (!ROLES.includes(role as Role) || !id) return null;
+20:    if (r === 'PLATFORM_ADMIN') {

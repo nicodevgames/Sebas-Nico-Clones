@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PP Slots — Dinero Real</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+#grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;background:#241305;border-radius:14px;padding:10px;border:3px solid #6b3f1d;max-width:720px;margin:10px auto}
+.celda{aspect-ratio:1;background:#171006;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:clamp(24px,6vw,42px)}
+.celda.win{background:#33260a;outline:2px solid #ffb020;animation:p .5s infinite alternate}
+@keyframes p{to{box-shadow:0 0 16px #ffb020}}
+#bar{margin-top:auto;background:#140d05;border-top:2px solid #6b3f1d;padding:10px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+.caja{background:#1d1508;border:1px solid #4a3010;border-radius:10px;padding:6px 14px;text-align:center}
+.caja b{color:#ffd66e;display:block;font-size:18px}
+.caja span{font-size:10px;color:#a88;letter-spacing:1px}
+button{border:0;border-radius:12px;cursor:pointer;font-weight:700}
+#spin{background:linear-gradient(#ffc94a,#e8960f);color:#3a2400;width:96px;height:96px;border-radius:50%;font-size:16px;box-shadow:0 5px 0 #8a5406}
+#spin:disabled{filter:grayscale(.6)}
+.bt{background:#2a5c33;color:#fff;width:40px;height:40px;font-size:18px;border-radius:10px}
+.bt.menos{background:#5c2a2a}
+#msg{text-align:center;color:#ffd66e;min-height:22px;padding:4px;font-weight:600}
+header{text-align:center;padding:8px;color:#c9a06a;font-size:12px;letter-spacing:2px}
+.tokenBox{background:#0d0803;border:1px dashed #4a3010;border-radius:8px;padding:4px 8px;font-size:10px;color:#9a7c4a;max-width:90vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 auto}
+</style></head><body>
+<header>DINERO REAL · LEDGER INFINITE ABYSS · <span id="juego"></span></header>
+<div class="tokenBox" id="tokInfo"></div>
+<div id="grid"></div>
+<div id="msg"></div>
+<div id="bar">
+  <div class="caja"><span>SALDO</span><b id="saldo">—</b></div>
+  <button class="bt menos" onclick="ch(-1)">−</button>
+  <div class="caja"><span>APOSTA</span><b id="ap">—</b></div>
+  <button class="bt" onclick="ch(1)">+</button>
+  <button id="spin" onclick="girar()">GIRAR</button>
+</div>
+<script>
+const qs=new URLSearchParams(location.search);
+const TOKEN=qs.get('token')||'';
+const GAME=(location.pathname.split('/real/')[1]||'vs20doghouse').replace(/[^a-z0-9-]/gi,'')||'vs20doghouse';
+let cfg=null,iCoin=3,ocupado=false;
+const $=i=>document.getElementById(i);
+const fmt=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const gl=id=>cfg?.catalogo[id]?.glifo||'❓';
+const col=id=>cfg?.catalogo[id]?.color||'#fff';
+
+async function init(){
+  $('juego').textContent=GAME;
+  $('tokInfo').textContent='sessionToken: '+(TOKEN?TOKEN.slice(0,28)+'…':'(FALTA token — inicia desde el lobby de Infinite Abyss)');
+  cfg=await(await fetch('/api/'+GAME+'/init')).json();
+  const g=$('grid');g.innerHTML='';
+  cfg.simbolos.forEach((colC,c)=>colC.forEach((s,f)=>{
+    const d=document.createElement('div');d.className='celda';d.id='c'+c+'_'+f;
+    d.textContent=gl(s.id);d.style.color=col(s.id);g.appendChild(d);
+  }));
+  await actualizarSaldo();
+}
+async function actualizarSaldo(){
+  try{
+    const r=await(await fetch('/api/abyss/saldo-directo',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:TOKEN})})).json();
+    if(r.saldo!=null)$('saldo').textContent='$'+fmt(r.saldo);else $('saldo').textContent='—';
+    if(r.error)$('msg').textContent=r.error;
+  }catch(e){}
+}
+function pintar(gr,wins){
+  cfg.simbolos.forEach((colC,c)=>colC.forEach((s,f)=>{
+    const el=$('c'+c+'_'+f);el.classList.remove('win');
+    const id=gr?gr[c][f]:s.id;el.textContent=gl(id);el.style.color=col(id);
+  }));
+  if(wins)wins.forEach(p=>{const li=cfg.lineas[p.linea-1];for(let c=0;c<p.cols;c++)$('c'+c+'_'+li[c]).classList.add('win')});
+}
+function ch(d){if(ocupado)return;iCoin=Math.max(0,Math.min(cfg.monedas.length-1,iCoin+d));$('ap').textContent='$'+fmt(cfg.lineas_count*cfg.monedas[iCoin])}
+function msg(t){$('msg').textContent=t}
+async function girar(){
+  if(ocupado)return;if(!TOKEN){msg('SIN SESION — vuelve al lobby de Infinite Abyss');return}
+  ocupado=true;$('spin').disabled=true;msg('');
+  try{
+    const r=await(await fetch('/api/spin-real',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:TOKEN,coin:cfg.monedas[iCoin],gameId:GAME})})).json();
+    if(r.error){msg(('ERROR: '+r.error).toUpperCase());await actualizarSaldo();return}
+    pintar(r.grid);
+    for(let c=0;c<r.grid.length;c++)setTimeout(()=>{for(let f=0;f<cfg.rows;f++){$('c'+c+'_'+f).textContent=gl(r.grid[c][f]);$('c'+c+'_'+f).style.color=col(r.grid[c][f])}},c*110);
+    await new Promise(o=>setTimeout(o,r.grid.length*110+160));
+    if(r.premio>0){pintar(r.grid,r.premios);msg('GANASTE $'+fmt(r.premio)+' — SALDO $'+fmt(r.saldo))}
+    else{pintar(r.grid);msg('SIN PREMIO — SALDO $'+fmt(r.saldo))}
+    $('saldo').textContent='$'+fmt(r.saldo);
+  }catch(e){msg('ERROR DE RED')}
+  finally{ocupado=false;$('spin').disabled=false}
+}
+init();
+</script></body></html>

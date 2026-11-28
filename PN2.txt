@@ -1,0 +1,2 @@
+LISTEN 0      511                                         *:3100             *:*          
+{"activo":false,"url":null,"providerId":"pragmatic-play"}

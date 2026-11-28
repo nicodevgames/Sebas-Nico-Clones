@@ -1,0 +1,26 @@
+8:export const contractRequired = (provider: string, what: string): HttpError =>
+41:    throw contractRequired('Pragmatic Play', 'launchGame');
+46:    throw contractRequired('Pragmatic Play', 'launchDemo');
+52:    throw contractRequired('Pragmatic Play', 'syncCatalog');
+import { HttpError } from '../../../shared/http/errors';
+import type { DemoContext, LaunchContext, SignedRequest } from '../../domain/ProviderAdapter';
+import type { GameDTO } from '../../domain/types';
+import type { WalletAction, WalletErrorResponse, WalletOkResponse } from '../../domain/walletProtocol';
+import { providerSecret, StandardProviderAdapter } from './StandardProviderAdapter';
+
+/** Error uniforme para las partes que requieren la documentación del proveedor bajo contrato. */
+export const contractRequired = (provider: string, what: string): HttpError =>
+  new HttpError(501, 'PROVIDER_CONTRACT_REQUIRED', `${provider}: ${what} requiere la documentación de integración del proveedor (bajo contrato)`);
+
+/**
+ * Esqueleto de Pragmatic Play (slots y casino en vivo).
+ *
+ * Se activa solo si existen TODAS estas variables:
+ * - HUB_PRAGMATIC_API_URL       URL base de la API de casino que entrega Pragmatic al firmar.
+ * - HUB_PRAGMATIC_SECURE_LOGIN  identificador del operador en Pragmatic.
+ * - HUB_PROVIDER_PRAGMATIC_PLAY_SECRET  clave secreta compartida para firmar/verificar.
+ *
+ * Pragmatic usa su propio protocolo seamless (nombres de campos, firma y códigos de error propios).
+ * Aquí NO se inventan endpoints ni formatos privados: las funciones marcadas con TODO(contract)
+ * deben completarse con la documentación oficial que entrega el proveedor tras el contrato.
+ */

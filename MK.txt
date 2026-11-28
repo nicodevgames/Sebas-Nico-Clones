@@ -1,0 +1,32 @@
+5: *   npm run dev:modules          # http://localhost:4000 (PORT para cambiarlo)
+7: * Tokens de desarrollo: Bearer dev:<ROLE>:<operatorId>:<id>, p. ej. dev:PLAYER:op-demo:player-demo.
+2: * Servidor de desarrollo de los módulos Infinite Abyss SIN la Fase 1 (billetera en memoria, MockAuth, eventos en memoria).
+3- * Sirve para probar el lobby (apps/web) y el backoffice (apps/backoffice) de punta a punta en local.
+4- *
+5- *   npm run dev:modules          # http://localhost:4000 (PORT para cambiarlo)
+6- *
+7- * Tokens de desarrollo: Bearer dev:<ROLE>:<operatorId>:<id>, p. ej. dev:PLAYER:op-demo:player-demo.
+8- * Nunca usar en producción: se niega a arrancar con NODE_ENV=production.
+9- */
+10-import cors from 'cors';
+11-import express from 'express';
+12-import http from 'node:http';
+13-import { Server } from 'socket.io';
+14-import { DEV_CORS_ORIGINS, resolveCorsOrigins } from '../config/env';
+15-import { registerModules } from './index';
+16-import { InMemoryWallet } from './shared/adapters/InMemoryWallet';
+17:import { MockAuth } from './shared/adapters/MockAuth';
+18-import { InMemoryEventBus } from './shared/events/EventBus';
+19-import { InMemoryPlayerCompliance } from './shared/ports/PlayerCompliancePort';
+20-
+21-async function main(): Promise<void> {
+22-  if (process.env.NODE_ENV === 'production') throw new Error('dev-server no se usa en producción');
+23-  const port = Number(process.env.PORT) || 4000;
+24-  const env = {
+25-    ...process.env,
+26-    NODE_ENV: process.env.NODE_ENV || 'development',
+27-    HUB_MOCK_PROVIDER: process.env.HUB_MOCK_PROVIDER ?? '1',
+28-    // Sin proxy delante: el navegador llega directo a este servidor (solo desarrollo).
+29-    HUB_PUBLIC_API_URL: process.env.HUB_PUBLIC_API_URL || process.env.PUBLIC_API_URL || `http://localhost:${port}`,
+30-  };
+31-  const logger = { info: console.log, warn: console.warn, error: console.error, debug: () => undefined };

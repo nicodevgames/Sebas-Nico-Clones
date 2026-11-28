@@ -1,0 +1,59 @@
+'use client';
+import { useT } from "@/lib/i18n";
+import { Fragment, type ReactNode } from 'react';
+import Link from 'next/link';
+import { Crown, Dices, Flame, Gamepad2, Layers, Radio, Sparkles, Trophy } from 'lucide-react';
+import { useAuth } from '@/lib/auth';
+import { BannerCarousel } from '@/components/lobby/BannerCarousel';
+import { GameRow } from '@/components/lobby/GameRow';
+import { JackpotTicker } from '@/components/lobby/JackpotTicker';
+import { LastWins } from '@/components/lobby/LastWins';
+import { LeviathanSpotlight } from '@/components/lobby/LeviathanSpotlight';
+import { LiveBets } from '@/components/lobby/LiveBets';
+import { useLobby } from '@/components/lobby/LobbyProvider';
+import { MissionsPanel } from '@/components/lobby/MissionsPanel';
+import { PromoCard } from '@/components/lobby/PromoCard';
+import { Skeleton } from '@/components/lobby/States';
+import { api } from '@/lib/lobby/api';
+import { useAsync, useGames, useJackpots } from '@/lib/lobby/hooks';
+import { formatInt, formatMoney } from '@/lib/lobby/format';
+import { LiveFeedProvider } from '@/lib/lobby/liveBets';
+import type { ReefSection } from '@/lib/reef';
+
+const QUICK = [
+  { label: 'Originals', href: '/lobby/category/originals', icon: Gamepad2 },
+  { label: 'Slots', href: '/lobby/category/slots', icon: Layers },
+  { label: 'Casino en vivo', href: '/lobby/category/live', icon: Radio },
+  { label: 'Mesa', href: '/lobby/category/table', icon: Dices },
+  { label: 'Nuevos', href: '/lobby/category/new', icon: Sparkles },
+  { label: 'Populares', href: '/lobby/category/popular', icon: Flame },
+];
+
+/** Mosaico de accesos grandes (plantillas tipo club). */
+const TILES = [
+  { label: 'Slots', href: '/lobby/category/slots', icon: Layers },
+  { label: 'En vivo', href: '/lobby/category/live', icon: Radio },
+  { label: 'Originals', href: '/lobby/category/originals', icon: Gamepad2 },
+  { label: 'Top', href: '/lobby/category/popular', icon: Flame },
+  { label: 'VIP', href: '/lobby/vip', icon: Crown },
+];
+
+const DEFAULT_ORDER: ReefSection[] = ['hero', 'last_wins', 'originals', 'slots', 'popular', 'new', 'live', 'live_bets', 'tournaments'];
+
+/** Fila de proveedores (enlaza a la página de cada uno). */
+function ProviderStrip() {
+  const { t } = useT();
+  const p = useAsync(() => api.providers().then((r) => r.items), 'providers');
+  if (p.loading) return <Skeleton className="h-10" />;
+  if (p.error || !p.data?.length) return null;
+  return (
+    <section aria-label={t("Proveedores")} className="space-y-3">
+25:  { label: 'Slots', href: '/lobby/category/slots', icon: Layers },
+27:  { label: 'Mesa', href: '/lobby/category/table', icon: Dices },
+34:  { label: 'Slots', href: '/lobby/category/slots', icon: Layers },
+41:const DEFAULT_ORDER: ReefSection[] = ['hero', 'last_wins', 'originals', 'slots', 'popular', 'new', 'live', 'live_bets', 'tournaments'];
+98:  const slots = useGames({ category: 'slots', pageSize: 16 });
+124:    last_wins: <LastWins games={[...originals.items, ...slots.items, ...popular.items, ...fresh.items, ...live.items]} />,
+126:    slots: <GameRow title={t("Slots")} icon={icon(Layers)} href="/lobby/category/slots" games={slots.items} loading={slots.loading} error={slots.error} />,
+169:              <nav aria-label={t("Categorías rápidas")} className="nf-tabs">
+171:                  <Link key={href} href={href} className="nf-tab"><I aria-hidden className="h-4 w-4" />{t(label)}</Link>

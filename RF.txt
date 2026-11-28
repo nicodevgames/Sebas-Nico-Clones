@@ -1,0 +1,13 @@
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/infrastructure/http
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/infrastructure/http/router.ts
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/domain
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/__tests__
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/infrastructure
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/infrastructure/wallet
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/infrastructure/persistence
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/infrastructure/adapters
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/infrastructure/adapters/aggregators
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/infrastructure/net
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/infrastructure/http
+/root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/application

@@ -197,6 +197,105 @@ app.get('/caratulas.json', (req, res) => {
   catch (e) { res.json({}); }
 });
 
+// ══════════ PUENTE INFINITE ABYSS (dinero real, ledger seamless) ══════════
+const abyss = require('./engine/abyssBridge');
+function caratulas() {
+  try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'engine', 'caratulas.json'), 'utf8')); }
+  catch (e) { return {}; }
+}
+
+app.get('/api/abyss/estado', (req, res) => res.json({ activo: abyss.activo(), url: abyss.CFG.url || null, providerId: abyss.CFG.providerId }));
+// Configurar el puente sin reiniciar: {"url":"https://infinite-abyss.com/_svc/api/hub/v1","secret":"..."}
+app.post('/api/abyss/configurar', (req, res) => {
+  const d = leerJson(req);
+  if (!d || typeof d !== 'object') return res.status(400).json({ error: 'payload invalido' });
+  abyss.configurar(d);
+  res.json({ ok: true, activo: abyss.activo(), url: abyss.CFG.url, providerId: abyss.CFG.providerId });
+});
+
+// Catalogo en formato GameDTO de Infinite Abyss (para syncCatalog del proveedor)
+app.get('/api/abyss/catalogo', (req, res) => {
+  const items = [];
+  const enPool = storage.leer('seed_catalogo', []);
+  for (const s of enPool) {
+    const imagen = (caratulas()[s.id] || '').replace('™', '%E2%84%A2');
+    items.push({
+      externalId: s.id,
+      title: s.nombre,
+      category: 'slots',
+      mechanic: s.id.includes('megaways') ? 'megaways' : 'lines',
+      rtp: 96.5,
+      volatility: 'medium',
+      images: imagen ? { thumb: imagen, banner: imagen } : undefined,
+      hasDemo: true
+    });
+  }
+  res.json({ providerId: abyss.CFG.providerId, total: items.length, items });
+});
+
+// Spin dinero real: bet -> resultado (motor local) -> win. Autoritativo en servidor.
+app.post('/api/spin-real', async (req, res) => {
+  if (!abyss.activo()) return res.status(503).json({ error: 'puente abyss no configurado' });
+  const d = leerJson(req);
+  const token = String(d.token || '').trim();
+  const coin = Number(d.coin) || 0.1;
+  const gameId = String(d.gameId || 'vs20doghouse').replace(/[^a-z0-9-]/gi, '');
+  if (!token) return res.status(400).json({ error: 'falta token de sesion' });
+  const g = motor.cargarJuego(gameId);
+  if (!g) return res.status(404).json({ error: 'juego inexistente' });
+
+  const lineas = g.lineas.length;
+  const apuestaU = abyss.aUnidades(lineas * coin);
+  const txBase = 'pp-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  const roundId = 'rnd-' + txBase;
+
+  try {
+    const bet = await abyss.walletCall('bet', { sessionToken: token, transactionId: txBase + '-b', roundId, gameId, amount: apuestaU });
+    if (bet.estado !== 200 || bet.json.status !== 'OK') {
+      return res.status(bet.estado === 200 ? 400 : bet.estado).json({ error: 'bet rechazado', detalle: bet.json });
+    }
+    const grid = motor.girarGrid(g, 0);
+    const ev = motor.evaluar(g, grid, coin);
+    const premioTotal = +(ev.premios.reduce((a, p) => a + p.monto, 0) + ev.scatterMonto).toFixed(2);
+    let winRes = null;
+    if (premioTotal > 0) {
+      const win = await abyss.walletCall('win', { sessionToken: token, transactionId: txBase + '-w', roundId, gameId, amount: abyss.aUnidades(premioTotal), roundClosed: true });
+      if (win.estado !== 200 || win.json.status !== 'OK') {
+        // rollback por consistencia (premio no acreditado -> devuelve la apuesta)
+        await abyss.walletCall('rollback', { sessionToken: token, transactionId: txBase + '-r', referenceTransactionId: txBase + '-b', roundId });
+        return res.status(500).json({ error: 'win rechazado, apuesta revertida', detalle: win.json });
+      }
+      winRes = win.json;
+    }
+    const saldoFinal = winRes ? winRes.balance : (bet.json.balance || null);
+    res.json({
+      grid, premios: ev.premios, scatters: ev.scatters, scatterMonto: ev.scatterMonto,
+      apuesta: lineas * coin, premio: premioTotal,
+      saldoUnidades: String(saldoFinal), saldo: saldoFinal != null ? abyss.decimal(saldoFinal) : null,
+      moneda: (winRes || bet.json).currency, roundId, tx: txBase
+    });
+  } catch (e) { res.status(502).json({ error: e.message }); }
+});
+
+// Saldo directo por token (consulta balance al Hub, sin mover dinero)
+app.post('/api/abyss/saldo-directo', async (req, res) => {
+  if (!abyss.activo()) return res.status(503).json({ error: 'puente no configurado' });
+  const d = leerJson(req);
+  const token = String(d.token || '').trim();
+  if (!token) return res.json({ error: 'sin token' });
+  try {
+    const s = await abyss.saldo(token);
+    res.json({ saldo: abyss.decimal(s.unidades), moneda: s.moneda });
+  } catch (e) { res.status(502).json({ error: e.message }); }
+});
+
+// Runner de dinero real (el Hub de Abyss llega aqui desde launchGame)
+app.get('/real/:gameId', (req, res) => {
+  const gameId = String(req.params.gameId || 'vs20doghouse').replace(/[^a-z0-9-]/gi, '');
+  res.sendFile(path.join(__dirname, 'public', 'real.html'));
+});
+app.get('/real', (req, res) => res.sendFile(path.join(__dirname, 'public', 'real.html')));
+
 // ══════════ LOBBY + JUEGOS ORIGINALES (cliente real de Pragmatic) ══════════
 // Catalogo DINAMICO: persistido en data/catalogo.json, editable por API.
 const DEFAULT_CATALOGO = [

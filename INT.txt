@@ -1,0 +1,4 @@
+19:- Los secretos de proveedores del Hub (`HUB_PROVIDER_<ID>_SECRET`) son por proveedor: sin secreto, ese proveedor queda deshabilitado. El proveedor simulado solo se habilita fuera de producción o con `HUB_MOCK_PROVIDER=1`.
+40:Las llamadas del proveedor al Hub (`/hub/v1/wallet`) van firmadas con HMAC sobre el cuerpo tal como llega. Por eso el `express.json` global no puede consumir el stream sin guardarlo. El módulo hub exporta `captureRawBody`, que se usa como `verify` del parser:
+66:- `HUB_MOCK_PROVIDER` se fuerza a `1` si no se define.
+74 /root/Sebas-Nico-Clones/abyss/docs/integration.md

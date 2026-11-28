@@ -1,0 +1,13 @@
+<html>
+<head><script>window.UHT_PACKAGES_INFO='{"languages":[]}';window.UHT_SCRIPTS_SIZE='build.js?key=442773:3131544';window.__CFG="{}";window.gameConfig=JSON.parse(window.__CFG);(function(){var d=document.createElement("div");d.id="__dbg";d.style.cssText="position:fixed;z-index:99999;bottom:0;left:0;right:0;max-height:38%;overflow:auto;background:rgba(0,0,0,.85);color:#7f7;font:11px monospace;padding:4px;white-space:pre-wrap;pointer-events:none";document.addEventListener("DOMContentLoaded",function(){document.body.appendChild(d)});window.__dbg=function(m){try{d.textContent+=(d.textContent?"\n":"")+m;d.scrollTop=d.scrollHeight}catch(e){}};window.addEventListener("error",function(e){var t=e.target;if(t&&(t.src||t.href))window.__dbg("[RES-FAIL] "+(t.src||t.href));else window.__dbg("[JS-ERR] "+(e.message||e.error)+" @"+(e.filename||"")+":"+e.lineno)},true);var of=window.fetch;if(of)window.fetch=function(u,o){return of(u,o).then(function(r){if(!r.ok)window.__dbg("[FETCH "+r.status+"] "+u);return r}).catch(function(x){window.__dbg("[FETCH-ERR] "+u+" :: "+x.message);throw x})};var ox=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){var s=this;this.addEventListener("load",function(){if(s.status>=400)window.__dbg("[XHR "+s.status+"] "+u)});this.addEventListener("error",function(){window.__dbg("[XHR-ERR] "+u)});return ox.call(this,m,u)};window.addEventListener("DOMContentLoaded",function(){window.__dbg("[stage] DOM listo, esperando Loader...")});setInterval(function(){var L=window.Loader;window.__dbg("[tick] Loader="+(L?"SI":"no")+" GAME_URL="+(window.UHT_CONFIG&&window.UHT_CONFIG.GAME_URL||"-")+" scripts="+document.scripts.length+" step="+(window.LoadingStep!==undefined?window.LoadingStep:"-"))},2000);})();</script><title>404 Not Found</title></head>
+<body>
+<center><h1>404 Not Found</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->

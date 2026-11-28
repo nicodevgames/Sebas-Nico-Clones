@@ -1,0 +1,9 @@
+  syscall: 'listen',
+  address: '::',
+  port: 3100
+}
+
+Node.js v20.20.2
+2408543
+LISTEN 0      511                                         *:3000             *:*    users:(("node",pid=2408543,fd=18))          
+LISTEN 0      511                                         *:3100             *:*    users:(("node",pid=2403257,fd=18))          

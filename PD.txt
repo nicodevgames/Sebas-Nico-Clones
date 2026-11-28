@@ -1,0 +1,57 @@
+23:export class PragmaticPlayAdapter extends StandardProviderAdapter {
+24-  readonly id = 'pragmatic-play';
+25-  private readonly apiUrl?: string;
+26-  private readonly secureLogin?: string;
+27-
+28-  constructor(env: NodeJS.ProcessEnv) {
+29-    super(providerSecret(env, 'pragmatic-play'));
+30-    this.apiUrl = env.HUB_PRAGMATIC_API_URL || undefined;
+31-    this.secureLogin = env.HUB_PRAGMATIC_SECURE_LOGIN || undefined;
+32-  }
+33-
+34-  get enabled(): boolean {
+35-    return Boolean(this.secret && this.apiUrl && this.secureLogin);
+36-  }
+37-
+38-  async launchGame(_ctx: LaunchContext): Promise<{ url: string }> {
+39-    // TODO(contract): llamada de inicio de juego con secureLogin + token de sesión (ctx.session.token)
+40-    // + símbolo del juego (ctx.game.externalId) + idioma/returnUrl, firmada según el manual de Pragmatic.
+41-    throw contractRequired('Pragmatic Play', 'launchGame');
+42-  }
+43-
+44-  async launchDemo(_ctx: DemoContext): Promise<{ url: string }> {
+45-    // TODO(contract): URL de modo demo que publique Pragmatic para el operador.
+46-    throw contractRequired('Pragmatic Play', 'launchDemo');
+47-  }
+48-
+49-  async syncCatalog(): Promise<GameDTO[]> {
+50-    // TODO(contract): endpoint de listado de juegos del operador; mapear símbolo→externalId,
+51-    // tipo→category, rtp/volatilidad si los entrega y mercados restringidos.
+52-    throw contractRequired('Pragmatic Play', 'syncCatalog');
+53-  }
+54-
+55-  verifySignature(_req: SignedRequest): boolean {
+56-    // TODO(contract): algoritmo de firma de callbacks (campos y orden que define Pragmatic).
+57-    // Mientras no exista, se rechaza todo callback (falla cerrado).
+58-    return false;
+59-  }
+60-
+61-  mapRequest(_action: WalletAction, _body: unknown): unknown {
+62-    // TODO(contract): traducir los callbacks de Pragmatic (autenticación, saldo, apuesta, resultado,
+63-    // reembolso, bonus) al protocolo estándar: { sessionToken, transactionId, roundId, gameId, amount, … }.
+64-    // Ojo: Pragmatic envía montos decimales: convertir a unidades mínimas sin coma flotante.
+65-    throw contractRequired('Pragmatic Play', 'mapRequest');
+66-  }
+67-
+68-  mapResponse(_action: WalletAction, _res: WalletOkResponse): unknown {
+69-    // TODO(contract): formato de respuesta y códigos de éxito de Pragmatic.
+70-    throw contractRequired('Pragmatic Play', 'mapResponse');
+71-  }
+72-
+73-  mapError(action: WalletAction, err: WalletErrorResponse): { status: number; body: unknown } {
+74-    // TODO(contract): tabla de códigos de error de Pragmatic (saldo insuficiente, sesión inválida…).
+75-    return super.mapError(action, err);
+76-  }
+77-}
+78-
+188 /root/Sebas-Nico-Clones/abyss/apps/api/src/modules/hub/infrastructure/adapters/ContractAdapters.ts

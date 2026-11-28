@@ -1,0 +1,4 @@
+alta-provider=000
+sync=000
+head: cannot open '/root/Sebas-Nico-Clones/r2.json' for reading: No such file or directory
+

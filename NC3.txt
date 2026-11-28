@@ -1,0 +1,11 @@
+LISTEN 0      511                                         *:3000             *:*    users:(("node",pid=2400431,fd=18))          
+    PID COMMAND
+2400431 node server.js
+  apparmor.service                               loaded active exited  Load AppArmor profiles
+  apport.service                                 loaded active exited  LSB: automatic crash report generation
+  kmod-static-nodes.service                      loaded active exited  Create List of Static Device Nodes
+  multipathd.service                             loaded active running Device-Mapper Multipath Device Controller
+  snapd.apparmor.service                         loaded active exited  Load AppArmor profiles managed internally by snapd
+  systemd-sysctl.service                         loaded active exited  Apply Kernel Variables
+  systemd-tmpfiles-setup-dev.service             loaded active exited  Create Static Device Nodes in /dev
+  tailscaled.service                             loaded active running Tailscale node agent

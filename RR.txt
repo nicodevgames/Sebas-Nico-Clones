@@ -1,0 +1,27 @@
+154:  r.get(
+162:  r.get(
+170:  r.get(
+178:  r.post(
+198:  r.get(
+215:  r.post('/wallet/:action', async (req: Request, res: Response) => {
+218:    const adapter = providerId ? ctx.adapters.get(providerId) : undefined;
+261:    const adapter = ctx.adapters.get(providerId);
+286:  r.post('/providers/:providerId/callback', providerCallback);
+287:  r.post('/providers/:providerId/callback/:variant', providerCallback);
+290:  r.get(
+300:  r.post(
+304:      const remote = operatorId ? await ctx.remoteOperators.get(operatorId) : null;
+318:  r.get(
+323:      sendJson(res, { items: list.map((p) => ({ ...p, integrated: Boolean(ctx.adapters.get(p.id)) })) });
+326:  r.post(
+346:  r.post(
+351:      const adapter = ctx.adapters.get(id);
+358:  r.get(
+366:  r.post(
+391:  r.get(
+399:  r.put(
+408:  r.put(
+418:  r.get(
+437:  r.get(
+445:  r.post(
+450:      const prev = await ctx.remoteOperators.get(b.id);

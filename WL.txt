@@ -1,0 +1,35 @@
+ls: cannot access '/root/Sebas-Nico-Clones/abyss/apps/web/app': No such file or directory
+ls: cannot access '/root/Sebas-Nico-Clones/abyss/apps/web/app/lobby': No such file or directory
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/TournamentTable.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/CategoryNav.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/PromoCard.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/LastWins.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/SearchBox.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/DailyWheel.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/AccountMenu.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/BannerCarousel.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/JackpotTicker.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/LeviathanSpotlight.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/MissionsPanel.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/GameRow.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/VipProgressBar.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/LobbyShell.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/LiveBets.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/States.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/LeviathanArt.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/GameGrid.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/LobbyProvider.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/components/lobby/GameCard.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/layout.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/provider/[id]/page.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/search/page.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/vip/page.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/favorites/page.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/game/[id]/page.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/leviathan/[id]/page.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/leviathan/page.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/category/[slug]/page.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/page.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/recent/page.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/tournaments/[id]/page.tsx
+/root/Sebas-Nico-Clones/abyss/apps/web/src/app/(lobby)/lobby/tournaments/page.tsx

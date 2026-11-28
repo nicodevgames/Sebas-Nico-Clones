@@ -1,0 +1,96 @@
+import { HttpError } from '../../../../shared/http/errors';
+import type { HubWalletFacade } from '../../../domain/ProviderAdapter';
+import type { WalletOkResponse } from '../../../domain/walletProtocol';
+
+/** Código estable de un error del Hub/ledger (o undefined si no es un HttpError). */
+export const errorCode = (e: unknown): string | undefined => (e instanceof HttpError ? e.code : undefined);
+
+/** Ids namespaced por tipo: los agregadores pueden reusar el mismo transaction_id para bet y win. */
+export const txKey = (type: 'bet' | 'win' | 'refund' | 'rollback', providerTxId: string): string => `${type}:${providerTxId}`;
+
+/**
+ * Los agregadores no cierran rondas explícitamente y pueden mandar varios wins (o bets) en una misma ronda.
+ * Si la ronda ya está liquidada, la operación va a una sub-ronda determinista `<ronda>#<tx>`; la reentrega
+ * del mismo tx vuelve a caer en esa sub-ronda y la idempotencia del Hub devuelve la respuesta original.
+ */
+export async function withRoundFallback(
+  roundId: string,
+  providerTxId: string,
+  op: (roundId: string) => Promise<WalletOkResponse>,
+): Promise<WalletOkResponse> {
+  try {
+    return await op(roundId);
+  } catch (e) {
+    const code = errorCode(e);
+    if (code !== 'ROUND_CLOSED' && code !== 'DUPLICATE') throw e;
+    return op(`${roundId}#${providerTxId}`);
+  }
+}
+
+export type ReversalType = 'bet' | 'win' | 'refund';
+
+/**
+ * Busca la transacción original de una reversión en el orden indicado (por tipo declarado o, si no, bet → win → refund).
+ * Devuelve la clave namespaced encontrada o null.
+ */
+export async function findOriginal(wallet: HubWalletFacade, providerTxId: string, declared?: string): Promise<string | null> {
+  const order: ReversalType[] =
+    declared === 'win' ? ['win', 'bet', 'refund'] : declared === 'refund' ? ['refund', 'bet', 'win'] : ['bet', 'win', 'refund'];
+  for (const t of order) {
+    const key = txKey(t, providerTxId);
+    if (await wallet.findTx(key)) return key;
+  }
+  return null;
+}
+
+/** Lee el cuerpo como texto acotado (los catálogos pueden ser grandes; nunca sin límite). */
+export async function readLimited(res: Response, maxBytes: number): Promise<string> {
+  const len = Number(res.headers.get('content-length') ?? '0');
+  if (len > maxBytes) throw new Error(`Respuesta demasiado grande (${len} bytes)`);
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.length > maxBytes) throw new Error(`Respuesta demasiado grande (${buf.length} bytes)`);
+  return buf.toString('utf8');
+}
+
+/** Error saliente hacia el proveedor (lanzamiento/catálogo): 502 con el detalle recortado y sin secretos. */
+export function providerError(provider: string, message: string, secrets: string[] = []): HttpError {
+  let msg = message.slice(0, 200);
+  for (const s of secrets) if (s) msg = msg.split(s).join('[clave]');
+  return new HttpError(502, 'PROVIDER_ERROR', `${provider}: ${msg}`);
+}
+153:export class GenericAggregatorAdapter extends StandardProviderAdapter {
+154-  readonly id: string;
+155-  private readonly apiUrl?: string;
+156-  private readonly operatorRef?: string;
+157-
+158-  constructor(env: NodeJS.ProcessEnv) {
+159-    const id = env.HUB_AGGREGATOR_ID || 'aggregator';
+160-    super(providerSecret(env, id));
+161-    this.id = id;
+162-    this.apiUrl = env.HUB_AGGREGATOR_API_URL || undefined;
+163-    this.operatorRef = env.HUB_AGGREGATOR_OPERATOR_ID || undefined;
+164-  }
+165-
+166-  get enabled(): boolean {
+167-    return Boolean(this.secret && this.apiUrl && this.operatorRef);
+168-  }
+169-
+170-  async launchGame(_ctx: LaunchContext): Promise<{ url: string }> {
+171-    // TODO(contract): endpoint de "game launch"/"game url" del agregador con operatorRef, token de
+172-    // sesión, id de juego, moneda, idioma y returnUrl, firmado según su manual.
+173-    throw contractRequired(this.id, 'launchGame');
+174-  }
+175-
+176-  async launchDemo(_ctx: DemoContext): Promise<{ url: string }> {
+177-    // TODO(contract): variante demo del endpoint de lanzamiento.
+178-    throw contractRequired(this.id, 'launchDemo');
+179-  }
+180-
+181-  async syncCatalog(): Promise<GameDTO[]> {
+182-    // TODO(contract): endpoint de listado de juegos (normalmente paginado) y mapeo de sus campos a GameDTO.
+183-    throw contractRequired(this.id, 'syncCatalog');
+184-  }
+185-
+186-  // verifySignature/mapRequest/mapResponse heredan el modelo genérico HMAC + protocolo estándar.
+187-  // TODO(contract): ajustar nombres de campos y cabecera de firma del agregador elegido.
+188-}
